@@ -51,6 +51,7 @@ func _run() -> void:
 	if manager == null or _flow == null or grid == null or _board == null or sim == null:
 		_finish("missing gameplay nodes")
 		return
+	_flow.auto_flow = false  # this test gives every order by hand (test_auto_flow covers the fallback)
 	manager.contract_state_changed.connect(func(c: Contract) -> void:
 		if c == _contract:
 			_event("contract %s" % c.state_name()))

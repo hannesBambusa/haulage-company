@@ -41,6 +41,9 @@ signal hold_wanted(agent: CarryAgent)
 @export var forklift_roles: PackedStringArray = PackedStringArray(["Unloader", "Rack", "Loader"])
 ## Workers with pallet jacks may take LOAD jobs (off: forklifts load).
 @export var workers_carry: bool = false
+## Level worker who is the Jack operator (hand pallet jack, put-away to
+## ground-level slots). Empty = none.
+@export var jack_worker: String = "Worker1"
 
 var agents: Array[CarryAgent] = []
 var pending: Array[CarryJob] = []
@@ -188,6 +191,22 @@ func _pick_agent(job: CarryJob, target: StorageSlot) -> CarryAgent:
 	return best
 
 
+## The idle, available Jack operator, or null.
+func free_jack() -> JackCarrier:
+	for a: CarryAgent in agents:
+		if a is JackCarrier and a.is_idle() and a.available:
+			return a as JackCarrier
+	return null
+
+
+func jacks() -> Array[JackCarrier]:
+	var out: Array[JackCarrier] = []
+	for a: CarryAgent in agents:
+		if a is JackCarrier:
+			out.append(a as JackCarrier)
+	return out
+
+
 func forklifts() -> Array[ForkliftCarrier]:
 	var out: Array[ForkliftCarrier] = []
 	for a: CarryAgent in agents:
@@ -208,7 +227,13 @@ func _gather_agents(level: Node) -> void:
 				actor.position = Vector3(rest_spots[workers].x, actor.position.y, rest_spots[workers].z)
 			actor.set_rest_here()
 			workers += 1
-			if actor.is_job_capable():
+			if actor.is_job_capable() and not jack_worker.is_empty() and String(actor.name) == jack_worker:
+				var jc: JackCarrier = JackCarrier.new()
+				jc.name = "Carrier_" + String(actor.name)
+				add_child(jc)
+				jc.setup(actor, _grid, actor.position)
+				_add_agent(jc)
+			elif actor.is_job_capable():
 				if workers_carry:
 					var w: WorkerCarrier = WorkerCarrier.new()
 					w.name = "Carrier_" + String(actor.name)

@@ -77,9 +77,9 @@ func setup(p_body: Node3D, p_grid: StorageGrid, p_number: int, p_role: CarryJob.
 	set_home_here()
 
 
-## Only jobs of its own role: Unloader, Rack or Loader.
+## Only jobs of its own role: Unloader, Rack or Loader (never jack jobs).
 func suits(p_job: CarryJob) -> bool:
-	return p_job.role() == role
+	return p_job.role() == role and not p_job.wants_worker()
 
 
 func footprints_at(p: Vector2, yaw_at: float, bare: bool = false) -> Array:

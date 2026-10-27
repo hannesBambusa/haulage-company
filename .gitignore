@@ -1,7 +1,33 @@
+# Godot cache and per-user editor state
 .godot/
-export_presets.cfg
-export_credentials.cfg
 *.translation
-.DS_Store
-/screenshots/
+export_credentials.cfg
+
+# Build output
 /build/
+
+# Screenshots and capture output
+/screenshots/
+
+# Python cache (Blender and level tool scripts)
+__pycache__/
+*.pyc
+
+# Blender autosaves and backups
+*.blend1
+*.blend2
+*.blend@
+
+# Backups, logs and temp files
+*.bak
+*.orig
+*.tmp
+*.log
+scripts/tests/tmp/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp

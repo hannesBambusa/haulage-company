@@ -25,6 +25,9 @@ var to_slot: StorageSlot = null
 var agent: Node = null
 ## LOAD jobs: the dock lane whose trailer takes the pallet.
 var bay: TrailerBay = null
+## STORE jobs to a ground-level slot (rack L1 or floor) given to the Jack
+## operator (a worker with a hand pallet jack) instead of the Rack forklift.
+var by_jack: bool = false
 
 
 func _init(p_kind: Kind, p_unit: CargoUnit, p_to: StorageSlot = null) -> void:
@@ -76,9 +79,9 @@ func role() -> Role:
 	return Role.RACK
 
 
-## Pallet-jack jobs for workers (none in the core loop: forklifts do it all).
+## Pallet-jack jobs for workers: put-away to ground level by the Jack operator.
 func wants_worker() -> bool:
-	return false
+	return by_jack
 
 
 func touches_trailer() -> bool:

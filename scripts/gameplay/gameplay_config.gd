@@ -22,6 +22,12 @@ const TRAILER_CAPACITY: int = 10
 ## Most slots generated in each of the INBOUND and OUTBOUND zones.
 const ZONE_MAX_SLOTS: int = 12
 
+## Game seconds an unassigned INBOUND pallet waits for the player before it
+## is put away automatically (at once when INBOUND has AUTO_PUTAWAY_FREE_SLOTS
+## or fewer free slots).
+const AUTO_PUTAWAY_DELAY: float = 60.0
+const AUTO_PUTAWAY_FREE_SLOTS: int = 2
+
 ## Physics layers used by the click raycast (bits 20 and 21).
 const CARGO_LAYER: int = 1 << 19
 const SLOT_LAYER: int = 1 << 20

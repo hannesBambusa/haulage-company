@@ -114,7 +114,8 @@ func _setup() -> void:
 	var found: Array[WorkerActor] = []
 	for n: Node in _level.find_children("*", "Node3D", true, false):
 		var w: WorkerActor = n as WorkerActor
-		if w != null and w.is_visible_in_tree():
+		# the Jack operator does no duties: it waits at the jack spot
+		if w != null and w.is_visible_in_tree() and not (w.mover is JackCarrier):
 			found.append(w)
 	found.sort_custom(func(a: WorkerActor, b: WorkerActor) -> bool: return String(a.name).naturalnocasecmp_to(String(b.name)) < 0)
 	for i: int in found.size():
@@ -922,4 +923,7 @@ func staff_rows() -> Array[Dictionary]:
 		if status.is_empty() and d != null:
 			status = d.status
 		out.append({"name": w.display_name, "duty": duty_text, "status": status, "tired": w.tired, "thirst": w.thirst, "social": w.social})
+	if board != null:
+		for jc: JackCarrier in board.jacks():
+			out.append({"name": jc.worker_name, "duty": JackCarrier.ROLE_TITLE, "status": jc.status_text(), "tired": 0.0, "thirst": 0.0, "social": 0.0})
 	return out

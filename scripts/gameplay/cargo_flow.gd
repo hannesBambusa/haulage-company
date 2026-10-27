@@ -15,7 +15,12 @@ extends Node
 ## Docks run in physical mode: unloading ends when the trailer is empty,
 ## loading once every pallet is inside and the worker is out of the trailer.
 ## order_store() / order_outbound() are the player actions (click handler and
-## Storage panel call them; so does test_core_loop).
+## Storage panel call them; so does test_core_loop). With auto_flow on, both
+## have a fallback: an INBOUND pallet the player has not sent anywhere is put
+## away automatically after AUTO_PUTAWAY_DELAY game seconds, or at once when
+## INBOUND is nearly full (ground level -> the Jack operator when free, else
+## the Rack forklift, any level), and a scheduled pickup sends its stored
+## pallets to OUTBOUND by itself.
 
 signal unit_changed(unit: CargoUnit)
 
@@ -25,6 +30,8 @@ const REFERENCE_FLAG: String = "--reference_state"
 @export var storage_grid_path: NodePath
 @export var job_board_path: NodePath
 @export var level_path: NodePath = ^"../../Level1"
+## Auto put-away and auto outbound (off: the player gives every order).
+@export var auto_flow: bool = true
 
 var bays: Dictionary = {}  ## Dock -> TrailerBay
 
@@ -38,6 +45,7 @@ var _storage_low: bool = false
 var _quiet: bool = false
 var _reference: bool = false
 var _reference_carry: Dock = null
+var _auto_noted: Dictionary = {}  ## Contract -> true once its auto put-away toast fired
 
 
 func _ready() -> void:
@@ -405,6 +413,8 @@ func _deliver_shipped(dock: Dock) -> void:
 # --- storage --------------------------------------------------------------------
 
 func _on_minutes_advanced(game_minutes: float) -> void:
+	if auto_flow and not _reference:
+		_auto_putaway()
 	for c: Contract in _manager.active():
 		var stored: int = c.count_in(CargoUnit.State.STORED)
 		if stored > 0:
@@ -419,6 +429,12 @@ func _schedule_pickup(c: Contract) -> void:
 	c.pickup_at = GameState.now() + GameplayConfig.PICKUP_LEAD_MINUTES
 	_sim.schedule_visit(c, true, c.pickup_at)
 	_manager.set_state(c, Contract.State.PICKUP_SCHEDULED)
+	if auto_flow and not _reference:
+		var n: int = order_outbound(c)
+		_log("auto outbound: %d pallets of %s" % [n, c.company])
+		_notify("Pickup scheduled", "%s collects %d pallets at %s. %d sent to Outbound." % [
+			c.company, c.pallets, GameState.format_time_of(c.pickup_at), n])
+		return
 	_notify("Pickup scheduled", "%s collects %d pallets at %s. Send them to Outbound (Storage tab)." % [
 		c.company, c.pallets, GameState.format_time_of(c.pickup_at)])
 
@@ -431,6 +447,103 @@ func _check_storage_low() -> void:
 			_notify("Storage space low", "Only %d free pallet spaces left" % free)
 	else:
 		_storage_low = false
+
+
+# --- auto put-away ----------------------------------------------------------------
+
+## INBOUND pallets nobody has sent anywhere: after AUTO_PUTAWAY_DELAY, or at
+## once when INBOUND is nearly full, each gets a slot. Ground level (rack L1
+## or floor) goes to the Jack operator when it is free; otherwise the Rack
+## forklift takes it (any level), one queued job at a time so the jack gets
+## the next one when it comes back.
+func _auto_putaway() -> void:
+	var waiting: Array[CargoUnit] = []
+	for u: CargoUnit in units_in(CargoUnit.State.INBOUND):
+		if not u.is_busy() and u.slot != null:
+			waiting.append(u)
+	if waiting.is_empty():
+		return
+	var free_in: int = 0
+	for s: StorageSlot in _grid.zone_slots(StorageSlot.Zone.INBOUND):
+		if s.is_free():
+			free_in += 1
+	var full: bool = free_in <= GameplayConfig.AUTO_PUTAWAY_FREE_SLOTS
+	var now: float = GameState.now()
+	waiting.sort_custom(func(a: CargoUnit, b: CargoUnit) -> bool:
+		return float(a.get_meta(&"inbound_at", 0.0)) < float(b.get_meta(&"inbound_at", 0.0)))
+	for u: CargoUnit in waiting:
+		var since: float = float(u.get_meta(&"inbound_at", now))
+		if not full and (now - since) * 60.0 < GameplayConfig.AUTO_PUTAWAY_DELAY:
+			continue
+		if not _auto_store(u):
+			return
+
+
+## Queues one automatic put-away. False when nobody can take it right now.
+func _auto_store(u: CargoUnit) -> bool:
+	var targets: Array[StorageSlot] = []
+	for s: StorageSlot in _grid.store_targets():
+		if _grid.placement_ok(s, u) and _grid.column_clear(s):
+			targets.append(s)
+	if targets.is_empty():
+		return false
+	var by_jack: bool = _board.free_jack() != null
+	var best: StorageSlot = null
+	var best_d: float = INF
+	for s: StorageSlot in targets:
+		if by_jack and s.needs_lift():
+			continue
+		if not by_jack and s.needs_lift() and not _board.has_lift():
+			continue
+		var d: float = s.position.distance_to(u.slot.position)
+		if d < best_d:
+			best_d = d
+			best = s
+	if best == null and by_jack:
+		by_jack = false
+		return _auto_store_forklift(u, targets)
+	if best == null:
+		return false
+	if not by_jack and _rack_job_waiting():
+		return false
+	var job: CarryJob = CarryJob.new(CarryJob.Kind.STORE, u, best)
+	job.by_jack = by_jack
+	_queue_auto(job)
+	return true
+
+
+func _auto_store_forklift(u: CargoUnit, targets: Array[StorageSlot]) -> bool:
+	if _rack_job_waiting() or not _board.has_lift():
+		return false
+	var best: StorageSlot = null
+	var best_d: float = INF
+	for s: StorageSlot in targets:
+		var d: float = s.position.distance_to(u.slot.position)
+		if d < best_d:
+			best_d = d
+			best = s
+	if best == null:
+		return false
+	_queue_auto(CarryJob.new(CarryJob.Kind.STORE, u, best))
+	return true
+
+
+## A forklift put-away still waits for the Rack forklift.
+func _rack_job_waiting() -> bool:
+	for j: CarryJob in _board.pending:
+		if j.kind == CarryJob.Kind.STORE and not j.wants_worker():
+			return true
+	return false
+
+
+func _queue_auto(job: CarryJob) -> void:
+	var u: CargoUnit = job.unit
+	_board.add_job(job)
+	_log("auto put-away: %s -> %s (%s)" % [u.code, job.to_slot.label, "pallet jack" if job.by_jack else "Rack forklift"])
+	unit_changed.emit(u)
+	if not _auto_noted.has(u.contract):
+		_auto_noted[u.contract] = true
+		_notify("Auto put-away", "%s: pallets not assigned are being put away." % u.contract.company)
 
 
 # --- helpers --------------------------------------------------------------------
