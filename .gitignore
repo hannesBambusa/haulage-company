@@ -1,0 +1,7 @@
+.godot/
+export_presets.cfg
+export_credentials.cfg
+*.translation
+.DS_Store
+/screenshots/
+/build/

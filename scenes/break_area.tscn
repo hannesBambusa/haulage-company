@@ -1,0 +1,56 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay/duties/break_area.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/models/coffee_machine.glb" id="2_coffee"]
+[ext_resource type="PackedScene" path="res://assets/models/break_table.glb" id="3_table"]
+[ext_resource type="PackedScene" path="res://assets/models/break_chair.glb" id="4_chair"]
+[ext_resource type="PackedScene" path="res://assets/models/bench.glb" id="5_bench"]
+[ext_resource type="PackedScene" path="res://assets/models/vending_machine.glb" id="6_vending"]
+[ext_resource type="PackedScene" path="res://assets/models/water_cooler.glb" id="7_water"]
+[ext_resource type="PackedScene" path="res://assets/models/trash_bin.glb" id="8_trash"]
+
+[node name="BreakArea" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.4, 0, -23.5)
+script = ExtResource("1_script")
+
+[node name="CoffeeMachine" parent="." instance=ExtResource("2_coffee")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0, -1.92)
+
+[node name="TrashBin" parent="." instance=ExtResource("8_trash")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.85, 0, -1.95)
+
+[node name="WaterCooler" parent="." instance=ExtResource("7_water")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, -2.1)
+
+[node name="VendingMachine" parent="." instance=ExtResource("6_vending")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1.95, 0, -1.8)
+
+[node name="Table1" parent="." instance=ExtResource("3_table")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0, 0, 4.3)
+
+[node name="ChairA" parent="." instance=ExtResource("4_chair")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -1.0, 0, 3.55)
+
+[node name="ChairB" parent="." instance=ExtResource("4_chair")]
+transform = Transform3D(-1.2, 0, 0, 0, 1.2, 0, 0, 0, -1.2, -1.0, 0, 5.05)
+
+[node name="Bench" parent="." instance=ExtResource("5_bench")]
+transform = Transform3D(0, 0, 1.2, 0, 1.2, 0, -1.2, 0, 0, 0.75, 0, 5.0)
+
+[node name="CoffeeSpot" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0, -1.12)
+
+[node name="WaterSpot" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, -1.4)
+
+[node name="TrashSpot" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.85, 0, -1.22)
+
+[node name="GroupCenter" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0, 0.9)
+
+[node name="Queue1" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0, -0.2)
+
+[node name="Queue2" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.75, 0, 0.9)

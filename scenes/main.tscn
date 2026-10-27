@@ -1,0 +1,73 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/level_1.tscn" id="1_level"]
+[ext_resource type="PackedScene" path="res://ui/hud.tscn" id="2_hud"]
+[ext_resource type="Script" path="res://scripts/gameplay/storage_grid.gd" id="3_grid"]
+[ext_resource type="Script" path="res://scripts/gameplay/job_board.gd" id="4_jobs"]
+[ext_resource type="Script" path="res://scripts/gameplay/contract_manager.gd" id="5_contracts"]
+[ext_resource type="Script" path="res://scripts/gameplay/cargo_flow.gd" id="6_flow"]
+[ext_resource type="Script" path="res://scripts/gameplay/cargo_input.gd" id="7_input"]
+[ext_resource type="PackedScene" path="res://assets/models/forklift.glb" id="8_forklift"]
+[ext_resource type="Script" path="res://scripts/gameplay/traffic.gd" id="9_traffic"]
+[ext_resource type="PackedScene" path="res://scenes/break_area.tscn" id="10_break"]
+[ext_resource type="PackedScene" path="res://scenes/cleaning_corner.tscn" id="11_corner"]
+[ext_resource type="Script" path="res://scripts/gameplay/duties/duty_planner.gd" id="12_duties"]
+
+[node name="Main" type="Node3D"]
+
+[node name="Level1" parent="." instance=ExtResource("1_level")]
+
+[node name="Forklift2" parent="Level1/Vehicles" instance=ExtResource("8_forklift")]
+
+[node name="Forklift3" parent="Level1/Vehicles" instance=ExtResource("8_forklift")]
+
+[node name="BreakArea" parent="Level1" instance=ExtResource("10_break")]
+
+[node name="CleaningCorner" parent="Level1" instance=ExtResource("11_corner")]
+
+[node name="Gameplay" type="Node3D" parent="."]
+
+[node name="StorageGrid" type="Node3D" parent="Gameplay"]
+script = ExtResource("3_grid")
+level_path = NodePath("../../Level1")
+
+[node name="JobBoard" type="Node" parent="Gameplay"]
+script = ExtResource("4_jobs")
+level_path = NodePath("../../Level1")
+storage_grid_path = NodePath("../StorageGrid")
+rest_spots = PackedVector3Array(-19.8, 0, -3, -22.5, 0, -6.5, -8.5, 0, -24.5, 8.5, 0, -24.8, 0.5, 0, -24.8, 5, 0, -24.8, -21.8, 0, -13.5, 6.5, 0, -24, -8.4, 0, -23.2)
+parking_spots = PackedVector3Array(-6, 0, -12, -20.4, 0, -19, 8.5, 0, -10.5)
+parking_yaws = PackedFloat32Array(90, 90, 0)
+
+[node name="Traffic" type="Node" parent="Gameplay"]
+script = ExtResource("9_traffic")
+level_path = NodePath("../../Level1")
+storage_grid_path = NodePath("../StorageGrid")
+job_board_path = NodePath("../JobBoard")
+
+[node name="DutyPlanner" type="Node" parent="Gameplay"]
+script = ExtResource("12_duties")
+level_path = NodePath("../../Level1")
+storage_grid_path = NodePath("../StorageGrid")
+job_board_path = NodePath("../JobBoard")
+traffic_path = NodePath("../Traffic")
+break_area_path = NodePath("../../Level1/BreakArea")
+cleaning_corner_path = NodePath("../../Level1/CleaningCorner")
+
+[node name="ContractManager" type="Node" parent="Gameplay"]
+script = ExtResource("5_contracts")
+storage_grid_path = NodePath("../StorageGrid")
+
+[node name="CargoFlow" type="Node" parent="Gameplay"]
+script = ExtResource("6_flow")
+contract_manager_path = NodePath("../ContractManager")
+storage_grid_path = NodePath("../StorageGrid")
+job_board_path = NodePath("../JobBoard")
+level_path = NodePath("../../Level1")
+
+[node name="CargoInput" type="Node" parent="Gameplay"]
+script = ExtResource("7_input")
+cargo_flow_path = NodePath("../CargoFlow")
+storage_grid_path = NodePath("../StorageGrid")
+
+[node name="HUD" parent="." instance=ExtResource("2_hud")]

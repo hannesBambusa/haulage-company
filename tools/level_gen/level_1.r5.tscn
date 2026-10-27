@@ -1,0 +1,1186 @@
+[gd_scene load_steps=95 format=3]
+
+[ext_resource type="Shader" path="res://assets/materials/hazard_stripes.gdshader" id="1_hazard_strip"]
+[ext_resource type="FontFile" path="res://ui/fonts/Inter-Bold.ttf" id="2_Inter-Bold"]
+[ext_resource type="Environment" path="res://assets/materials/terminal_env.tres" id="3_terminal_env"]
+[ext_resource type="Script" path="res://scripts/camera/camera_view.gd" id="4_camera_view"]
+[ext_resource type="Script" path="res://scripts/camera/camera_rig.gd" id="5_camera_rig"]
+[ext_resource type="PackedScene" path="res://assets/models/wall_segment.glb" id="6_wall_segment"]
+[ext_resource type="PackedScene" path="res://assets/models/wall_corner.glb" id="7_wall_corner"]
+[ext_resource type="Script" path="res://scripts/level/dock_visual.gd" id="8_dock_visual"]
+[ext_resource type="PackedScene" path="res://assets/models/dock_door.glb" id="9_dock_door"]
+[ext_resource type="PackedScene" path="res://assets/models/dock_canopy.glb" id="10_dock_canopy"]
+[ext_resource type="Script" path="res://scripts/level/truck_rig.gd" id="11_truck_rig"]
+[ext_resource type="PackedScene" path="res://assets/models/truck_cab_red.glb" id="12_truck_cab_re"]
+[ext_resource type="PackedScene" path="res://assets/models/trailer_box.glb" id="13_trailer_box"]
+[ext_resource type="PackedScene" path="res://assets/models/truck_cab_blue.glb" id="14_truck_cab_bl"]
+[ext_resource type="PackedScene" path="res://assets/models/forklift.glb" id="15_forklift"]
+[ext_resource type="PackedScene" path="res://assets/models/pallet_jack.glb" id="16_pallet_jack"]
+[ext_resource type="PackedScene" path="res://assets/models/rack_bay_loaded.glb" id="17_rack_bay_loa"]
+[ext_resource type="PackedScene" path="res://assets/models/rack_bay.glb" id="18_rack_bay"]
+[ext_resource type="PackedScene" path="res://assets/models/pallet_boxes_b.glb" id="19_pallet_boxes"]
+[ext_resource type="PackedScene" path="res://assets/models/pallet_boxes_a.glb" id="20_pallet_boxes"]
+[ext_resource type="PackedScene" path="res://assets/models/pallet_boxes_c.glb" id="21_pallet_boxes"]
+[ext_resource type="PackedScene" path="res://assets/models/pallet_stack_empty.glb" id="22_pallet_stack"]
+[ext_resource type="PackedScene" path="res://assets/models/box_single.glb" id="23_box_single"]
+[ext_resource type="PackedScene" path="res://assets/models/office_desk.glb" id="24_office_desk"]
+[ext_resource type="Script" path="res://scripts/level/marking_line.gd" id="25_marking_line"]
+[ext_resource type="PackedScene" path="res://assets/models/bollard.glb" id="26_bollard"]
+[ext_resource type="PackedScene" path="res://assets/models/jersey_barrier.glb" id="27_jersey_barri"]
+[ext_resource type="PackedScene" path="res://assets/models/lamp_post.glb" id="28_lamp_post"]
+[ext_resource type="PackedScene" path="res://assets/models/cctv_pole.glb" id="29_cctv_pole"]
+[ext_resource type="PackedScene" path="res://assets/models/office_booth.glb" id="30_office_booth"]
+[ext_resource type="Script" path="res://scripts/level/fence_run.gd" id="31_fence_run"]
+[ext_resource type="PackedScene" path="res://assets/models/tree_cone_a.glb" id="32_tree_cone_a"]
+[ext_resource type="PackedScene" path="res://assets/models/tree_cone_b.glb" id="33_tree_cone_b"]
+[ext_resource type="PackedScene" path="res://assets/models/tree_round.glb" id="34_tree_round"]
+[ext_resource type="Script" path="res://scripts/level/tree_scatter.gd" id="35_tree_scatter"]
+[ext_resource type="Script" path="res://scripts/level/worker_actor.gd" id="36_worker_actor"]
+[ext_resource type="PackedScene" path="res://assets/models/worker.glb" id="37_worker"]
+[ext_resource type="PackedScene" path="res://assets/models/worker_bluehat.glb" id="38_worker_blueh"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_1"]
+seed = 1
+frequency = 0.02
+fractal_octaves = 4
+
+[sub_resource type="Gradient" id="Gradient_2"]
+colors = PackedColorArray(0.5725, 0.5529, 0.5176, 1, 0.6314, 0.6118, 0.5765, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_3"]
+width = 512
+height = 512
+seamless = true
+noise = SubResource("FastNoiseLite_1")
+color_ramp = SubResource("Gradient_2")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_4"]
+seed = 8
+frequency = 0.046
+fractal_octaves = 4
+
+[sub_resource type="Gradient" id="Gradient_5"]
+colors = PackedColorArray(0.7216, 0.7216, 0.7216, 1, 0.9412, 0.9412, 0.9412, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_6"]
+width = 512
+height = 512
+seamless = true
+noise = SubResource("FastNoiseLite_4")
+color_ramp = SubResource("Gradient_5")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7"]
+albedo_texture = SubResource("NoiseTexture2D_3")
+roughness_texture = SubResource("NoiseTexture2D_6")
+uv1_scale = Vector3(0.06, 0.06, 0.06)
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_8"]
+seed = 2
+frequency = 0.03
+fractal_octaves = 4
+
+[sub_resource type="Gradient" id="Gradient_9"]
+colors = PackedColorArray(0.2706, 0.2824, 0.302, 1, 0.3137, 0.3255, 0.3451, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_10"]
+width = 512
+height = 512
+seamless = true
+noise = SubResource("FastNoiseLite_8")
+color_ramp = SubResource("Gradient_9")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_11"]
+seed = 9
+frequency = 0.069
+fractal_octaves = 4
+
+[sub_resource type="Gradient" id="Gradient_12"]
+colors = PackedColorArray(0.8157, 0.8157, 0.8157, 1, 1, 1, 1, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_13"]
+width = 512
+height = 512
+seamless = true
+noise = SubResource("FastNoiseLite_11")
+color_ramp = SubResource("Gradient_12")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14"]
+albedo_texture = SubResource("NoiseTexture2D_10")
+roughness_texture = SubResource("NoiseTexture2D_13")
+uv1_scale = Vector3(0.05, 0.05, 0.05)
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_15"]
+seed = 3
+frequency = 0.03
+fractal_octaves = 4
+
+[sub_resource type="Gradient" id="Gradient_16"]
+colors = PackedColorArray(0.4157, 0.5725, 0.2196, 1, 0.4824, 0.6314, 0.2667, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_17"]
+width = 512
+height = 512
+seamless = true
+noise = SubResource("FastNoiseLite_15")
+color_ramp = SubResource("Gradient_16")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_18"]
+seed = 10
+frequency = 0.069
+fractal_octaves = 4
+
+[sub_resource type="Gradient" id="Gradient_19"]
+colors = PackedColorArray(0.8784, 0.8784, 0.8784, 1, 1, 1, 1, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_20"]
+width = 512
+height = 512
+seamless = true
+noise = SubResource("FastNoiseLite_18")
+color_ramp = SubResource("Gradient_19")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_21"]
+albedo_texture = SubResource("NoiseTexture2D_17")
+roughness_texture = SubResource("NoiseTexture2D_20")
+uv1_scale = Vector3(0.03, 0.03, 0.03)
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_22"]
+seed = 4
+frequency = 0.02
+fractal_octaves = 4
+
+[sub_resource type="Gradient" id="Gradient_23"]
+colors = PackedColorArray(0.6196, 0.6039, 0.5725, 1, 0.6706, 0.6549, 0.6235, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_24"]
+width = 512
+height = 512
+seamless = true
+noise = SubResource("FastNoiseLite_22")
+color_ramp = SubResource("Gradient_23")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_25"]
+seed = 11
+frequency = 0.046
+fractal_octaves = 4
+
+[sub_resource type="Gradient" id="Gradient_26"]
+colors = PackedColorArray(0.7843, 0.7843, 0.7843, 1, 0.9412, 0.9412, 0.9412, 1)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_27"]
+width = 512
+height = 512
+seamless = true
+noise = SubResource("FastNoiseLite_25")
+color_ramp = SubResource("Gradient_26")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_28"]
+albedo_texture = SubResource("NoiseTexture2D_24")
+roughness_texture = SubResource("NoiseTexture2D_27")
+uv1_scale = Vector3(0.08, 0.08, 0.08)
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_29"]
+albedo_color = Color(0.7059, 0.6941, 0.6667, 1)
+roughness = 0.9
+
+[sub_resource type="Resource" id="Resource_30"]
+script = ExtResource("4_camera_view")
+target = Vector3(-1, 0, -4)
+yaw_deg = 35
+pitch_deg = 42
+distance = 52
+fov_deg = 30
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_31"]
+size = Vector2(320, 320)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_32"]
+size = Vector2(30.8, 19.8)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_33"]
+size = Vector2(21.8, 7.1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_34"]
+size = Vector2(5.9, 30.2)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_35"]
+size = Vector2(46, 6.1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_36"]
+size = Vector2(6.1, 23.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_37"]
+size = Vector3(21.4, 0.12, 24.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_38"]
+size = Vector3(12.8, 0.12, 17.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_39"]
+size = Vector3(11.4, 0.12, 2.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_40"]
+size = Vector3(2.4, 0.12, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_41"]
+size = Vector3(6, 0.1, 5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_42"]
+size = Vector3(11.4, 0.16, 0.25)
+
+[sub_resource type="BoxMesh" id="BoxMesh_43"]
+size = Vector3(21.8, 0.16, 0.25)
+
+[sub_resource type="BoxMesh" id="BoxMesh_44"]
+size = Vector3(9, 0.16, 0.25)
+
+[sub_resource type="BoxMesh" id="BoxMesh_45"]
+size = Vector3(0.25, 0.16, 7.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_46"]
+size = Vector3(0.25, 0.16, 26.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_47"]
+size = Vector3(0.25, 0.16, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_48"]
+size = Vector3(0.25, 0.16, 24.4)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_49"]
+render_priority = 0
+shader = ExtResource("1_hazard_strip")
+shader_parameter/quad_size = Vector2(4, 0.6)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_50"]
+size = Vector2(4, 0.6)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_51"]
+render_priority = 0
+shader = ExtResource("1_hazard_strip")
+shader_parameter/quad_size = Vector2(4, 0.6)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_52"]
+size = Vector2(4, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_53"]
+albedo_color = Color(0.5255, 0.5294, 0.5451, 1)
+roughness = 0.8
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_54"]
+size = Vector2(7.5, 5.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_55"]
+albedo_color = Color(0.7843, 0.6471, 0.3608, 1)
+roughness = 0.8
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_56"]
+size = Vector2(6.4, 6.4)
+
+[node name="Level1" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("3_terminal_env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.1736, 0.6841, -0.7084, 0, 0.7193, 0.6947, 0.9848, 0.1206, -0.1249, 0, 30, 0)
+light_color = Color(1, 0.8431, 0.651, 1)
+light_energy = 1.7
+light_angular_distance = 1.5
+shadow_enabled = true
+shadow_bias = 0.03
+shadow_normal_bias = 1.2
+shadow_blur = 1.2
+directional_shadow_split_1 = 0.08
+directional_shadow_split_2 = 0.22
+directional_shadow_split_3 = 0.5
+directional_shadow_blend_splits = true
+directional_shadow_max_distance = 150.0
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("5_camera_rig")
+reference_view = SubResource("Resource_30")
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig"]
+current = true
+fov = 30
+near = 0.5
+far = 400.0
+
+[node name="Ground" type="Node3D" parent="."]
+
+[node name="Grass" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
+mesh = SubResource("PlaneMesh_31")
+surface_material_override/0 = SubResource("StandardMaterial3D_21")
+cast_shadow = 0
+
+[node name="Asphalt0" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, -0.02, 2.7)
+mesh = SubResource("PlaneMesh_32")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+cast_shadow = 0
+
+[node name="Asphalt1" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.3, -0.02, 16.05)
+mesh = SubResource("PlaneMesh_33")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+cast_shadow = 0
+
+[node name="Asphalt2" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.05, -0.02, -14.9)
+mesh = SubResource("PlaneMesh_34")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+cast_shadow = 0
+
+[node name="Asphalt3" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.02, -26.95)
+mesh = SubResource("PlaneMesh_35")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+cast_shadow = 0
+
+[node name="Asphalt4" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.95, -0.02, -18.45)
+mesh = SubResource("PlaneMesh_36")
+surface_material_override/0 = SubResource("StandardMaterial3D_14")
+cast_shadow = 0
+
+[node name="FloorMain" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, -0.06, -12)
+mesh = SubResource("BoxMesh_37")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="FloorRight" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6, -0.06, -15.5)
+mesh = SubResource("BoxMesh_38")
+surface_material_override/0 = SubResource("StandardMaterial3D_7")
+
+[node name="ApronFront" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.3, -0.06, 1.4)
+mesh = SubResource("BoxMesh_39")
+surface_material_override/0 = SubResource("StandardMaterial3D_28")
+
+[node name="ApronLeft" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.8, -0.06, 7.8)
+mesh = SubResource("BoxMesh_40")
+surface_material_override/0 = SubResource("StandardMaterial3D_28")
+
+[node name="BoothPad" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, -0.03, -2)
+mesh = SubResource("BoxMesh_41")
+surface_material_override/0 = SubResource("StandardMaterial3D_28")
+
+[node name="Curb0" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.3, 0.03, 2.85)
+mesh = SubResource("BoxMesh_42")
+surface_material_override/0 = SubResource("StandardMaterial3D_29")
+
+[node name="Curb1" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.3, 0.03, 19.7)
+mesh = SubResource("BoxMesh_43")
+surface_material_override/0 = SubResource("StandardMaterial3D_29")
+
+[node name="Curb2" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.1, 0.03, 12.75)
+mesh = SubResource("BoxMesh_44")
+surface_material_override/0 = SubResource("StandardMaterial3D_29")
+
+[node name="Curb3" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.65, 0.03, 16.2)
+mesh = SubResource("BoxMesh_45")
+surface_material_override/0 = SubResource("StandardMaterial3D_29")
+
+[node name="Curb4" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.3, 0.03, 6.3)
+mesh = SubResource("BoxMesh_46")
+surface_material_override/0 = SubResource("StandardMaterial3D_29")
+
+[node name="Curb5" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.55, 0.03, 7.8)
+mesh = SubResource("BoxMesh_47")
+surface_material_override/0 = SubResource("StandardMaterial3D_29")
+
+[node name="Curb6" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.3, 0.03, -12)
+mesh = SubResource("BoxMesh_48")
+surface_material_override/0 = SubResource("StandardMaterial3D_29")
+
+[node name="Building" type="Node3D" parent="."]
+
+[node name="FrontL0" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 0)
+
+[node name="FrontL1" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 0)
+
+[node name="FrontL2" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 0)
+
+[node name="BlockSide0" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -0.45, 0, 0, 3, 0, -0.9)
+
+[node name="FrontR1" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0.5, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, -7)
+
+[node name="Left0" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18, 0, -2)
+
+[node name="Left1" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18, 0, -6)
+
+[node name="Left2" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18, 0, -10)
+
+[node name="Left3" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18, 0, -14)
+
+[node name="Left4" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18, 0, -18)
+
+[node name="Left5" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18, 0, -22)
+
+[node name="Back0" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -16, 0, -24)
+
+[node name="Back1" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -12, 0, -24)
+
+[node name="Back2" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -8, 0, -24)
+
+[node name="Back3" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -4, 0, -24)
+
+[node name="Back4" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -24)
+
+[node name="Back5" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4, 0, -24)
+
+[node name="Back6" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 8, 0, -24)
+
+[node name="Back7" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 12, 0, -24)
+
+[node name="Back8" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(-0.5, 0, 0, 0, 1, 0, 0, 0, -1, 15, 0, -24)
+
+[node name="Right0" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16, 0, -22)
+
+[node name="Right1" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16, 0, -18)
+
+[node name="Right2" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16, 0, -14)
+
+[node name="Right3" parent="Building" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -0.625, 0, 0, 16, 0, -9.5)
+
+[node name="Corner0" parent="Building" instance=ExtResource("7_wall_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, 0)
+
+[node name="Corner1" parent="Building" instance=ExtResource("7_wall_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.35, 0, 0)
+
+[node name="Corner2" parent="Building" instance=ExtResource("7_wall_corner")]
+transform = Transform3D(1.2, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+
+[node name="Corner3" parent="Building" instance=ExtResource("7_wall_corner")]
+transform = Transform3D(1.15, 0, 0, 0, 1, 0, 0, 0, 1, 2.68, 0, 0)
+
+[node name="Corner4" parent="Building" instance=ExtResource("7_wall_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -1.8)
+
+[node name="Corner5" parent="Building" instance=ExtResource("7_wall_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -7)
+
+[node name="Corner6" parent="Building" instance=ExtResource("7_wall_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -7)
+
+[node name="Corner7" parent="Building" instance=ExtResource("7_wall_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0, -24)
+
+[node name="Corner8" parent="Building" instance=ExtResource("7_wall_corner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -24)
+
+[node name="Docks" type="Node3D" parent="."]
+
+[node name="DockDoor1" parent="Docks" instance=ExtResource("9_dock_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.35, 0, 0)
+script = ExtResource("8_dock_visual")
+number = 1
+open_amount = 1.0
+light_color = Color(0.2353, 1, 0.3529, 1)
+
+[node name="Hazard1" type="MeshInstance3D" parent="Docks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.35, -0.005, 1)
+mesh = SubResource("PlaneMesh_50")
+surface_material_override/0 = SubResource("ShaderMaterial_49")
+cast_shadow = 0
+
+[node name="DockDoor2" parent="Docks" instance=ExtResource("9_dock_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 0, 0)
+script = ExtResource("8_dock_visual")
+number = 2
+open_amount = 0.0
+light_color = Color(1, 0.6902, 0.1255, 1)
+
+[node name="Hazard2" type="MeshInstance3D" parent="Docks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, -0.005, 1)
+mesh = SubResource("PlaneMesh_52")
+surface_material_override/0 = SubResource("ShaderMaterial_51")
+cast_shadow = 0
+
+[node name="Canopy2" parent="Docks" instance=ExtResource("10_dock_canopy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 0, 0.2)
+
+[node name="Vehicles" type="Node3D" parent="."]
+
+[node name="TruckRed" type="Node3D" parent="Vehicles"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -4.35, 0, 0.78)
+script = ExtResource("11_truck_rig")
+cab_scene = ExtResource("12_truck_cab_re")
+trailer_scene = ExtResource("13_trailer_box")
+brake_lights = true
+
+[node name="TruckBlue" type="Node3D" parent="Vehicles"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 8.6, 0, -6.6)
+script = ExtResource("11_truck_rig")
+cab_scene = ExtResource("14_truck_cab_bl")
+trailer_scene = ExtResource("13_trailer_box")
+brake_lights = false
+
+[node name="Forklift" parent="Vehicles" instance=ExtResource("15_forklift")]
+transform = Transform3D(-0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, -0.7071, -7.4, 0, -7.4)
+
+[node name="PalletJack1" parent="Vehicles" instance=ExtResource("16_pallet_jack")]
+transform = Transform3D(0.5, 0, -0.866, 0, 1, 0, 0.866, 0, 0.5, -2.7, 0, -8.8)
+
+[node name="PalletJack2" parent="Vehicles" instance=ExtResource("16_pallet_jack")]
+transform = Transform3D(-0.5, 0, 0.866, 0, 1, 0, -0.866, 0, -0.5, 6.8, 0, -13)
+
+[node name="Interior" type="Node3D" parent="."]
+
+[node name="RackA1" parent="Interior" instance=ExtResource("17_rack_bay_loa")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13, 0, -8.6)
+
+[node name="RackA2" parent="Interior" instance=ExtResource("17_rack_bay_loa")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13, 0, -11.41)
+
+[node name="RackB1" parent="Interior" instance=ExtResource("17_rack_bay_loa")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6.6, 0, -13.4)
+
+[node name="RackB2" parent="Interior" instance=ExtResource("17_rack_bay_loa")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6.6, 0, -16.21)
+
+[node name="RackBack1" parent="Interior" instance=ExtResource("17_rack_bay_loa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -23.2)
+
+[node name="RackBack2" parent="Interior" instance=ExtResource("18_rack_bay")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.5, 0, -23.2)
+
+[node name="RackBack3" parent="Interior" instance=ExtResource("17_rack_bay_loa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.3, 0, -23.2)
+
+[node name="RackLeft1" parent="Interior" instance=ExtResource("17_rack_bay_loa")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -17.2, 0, -16)
+
+[node name="PB1" parent="Interior" instance=ExtResource("19_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.6, 0, -2.2)
+
+[node name="PB2" parent="Interior" instance=ExtResource("20_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.2, 0, -2.2)
+
+[node name="PB3" parent="Interior" instance=ExtResource("21_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.6, 0, -3.4)
+
+[node name="PB4" parent="Interior" instance=ExtResource("20_pallet_boxes")]
+transform = Transform3D(0.9848, 0, 0.1736, 0, 1, 0, -0.1736, 0, 0.9848, -15, 0, -3.6)
+
+[node name="PB5" parent="Interior" instance=ExtResource("22_pallet_stack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.4, 0, -2.3)
+
+[node name="PB6" parent="Interior" instance=ExtResource("19_pallet_boxes")]
+transform = Transform3D(0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, 0.7071, -9.6, 0, -5.3)
+
+[node name="PB7" parent="Interior" instance=ExtResource("20_pallet_boxes")]
+transform = Transform3D(0.7071, 0, 0.7071, 0, 1, 0, -0.7071, 0, 0.7071, -8.6, 0, -4.4)
+
+[node name="PB8" parent="Interior" instance=ExtResource("21_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2, 0, -4.6)
+
+[node name="PB8b" parent="Interior" instance=ExtResource("20_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2, 0, -3.5)
+
+[node name="PB9" parent="Interior" instance=ExtResource("22_pallet_stack")]
+transform = Transform3D(0.9659, 0, 0.2588, 0, 1, 0, -0.2588, 0, 0.9659, 0.2, 0, -8.6)
+
+[node name="IN1" parent="Interior" instance=ExtResource("19_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0, -15.8)
+
+[node name="IN2" parent="Interior" instance=ExtResource("20_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0, -15.8)
+
+[node name="IN3" parent="Interior" instance=ExtResource("21_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0, -14.7)
+
+[node name="IN4" parent="Interior" instance=ExtResource("19_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0, -14.7)
+
+[node name="IN5" parent="Interior" instance=ExtResource("20_pallet_boxes")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, -15.2)
+
+[node name="IN6" parent="Interior" instance=ExtResource("21_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0, -15.3)
+
+[node name="OUT1" parent="Interior" instance=ExtResource("22_pallet_stack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, -13.6)
+
+[node name="OUT2" parent="Interior" instance=ExtResource("21_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.4, 0, -13.6)
+
+[node name="OUT3" parent="Interior" instance=ExtResource("22_pallet_stack")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 11.6, 0, -15.6)
+
+[node name="OUT4" parent="Interior" instance=ExtResource("20_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0, -15.4)
+
+[node name="OUT5" parent="Interior" instance=ExtResource("19_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -12.6)
+
+[node name="RW1" parent="Interior" instance=ExtResource("20_pallet_boxes")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15.2, 0, -11)
+
+[node name="RW2" parent="Interior" instance=ExtResource("19_pallet_boxes")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15.2, 0, -12.4)
+
+[node name="RW3" parent="Interior" instance=ExtResource("21_pallet_boxes")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15.2, 0, -15)
+
+[node name="PB13" parent="Interior" instance=ExtResource("19_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.8, 0, -22.8)
+
+[node name="PB14" parent="Interior" instance=ExtResource("20_pallet_boxes")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4, 0, -22.8)
+
+[node name="EX1" parent="Interior" instance=ExtResource("22_pallet_stack")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4, 0, -1.4)
+
+[node name="EX2" parent="Interior" instance=ExtResource("22_pallet_stack")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4, 0, -2.4)
+
+[node name="EX3" parent="Interior" instance=ExtResource("22_pallet_stack")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4, 0, -3.4)
+
+[node name="Box1" parent="Interior" instance=ExtResource("23_box_single")]
+transform = Transform3D(0.9397, 0, 0.342, 0, 1, 0, -0.342, 0, 0.9397, -14, 0, -3)
+
+[node name="Box2" parent="Interior" instance=ExtResource("23_box_single")]
+transform = Transform3D(0.866, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866, 7.4, 0, -12.6)
+
+[node name="Office" type="Node3D" parent="."]
+
+[node name="PartitionA" parent="Office" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0, 0, 0, 1, 5, 0, -18.5)
+
+[node name="PartitionB" parent="Office" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0.875, 0, 0, 0, 0.5, 0, 0, 0, 1, 11.25, 0, -18.5)
+
+[node name="PartitionC" parent="Office" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0.75, 0, 0, 0, 0.5, 0, 0, 0, 1, 14.5, 0, -18.5)
+
+[node name="PartitionD" parent="Office" instance=ExtResource("6_wall_segment")]
+transform = Transform3D(0, 0, 1, 0, 0.5, 0, -1.375, 0, 0, 3, 0, -21.25)
+
+[node name="PartitionPost" parent="Office" instance=ExtResource("7_wall_corner")]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0, 0, 0, 1, 3, 0, -18.5)
+
+[node name="Desk1" parent="Office" instance=ExtResource("24_office_desk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -22.6)
+
+[node name="Desk2" parent="Office" instance=ExtResource("24_office_desk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, -22.6)
+
+[node name="Markings" type="Node3D" parent="."]
+
+[node name="InboundFill" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 0.006, -15.25)
+mesh = SubResource("PlaneMesh_54")
+surface_material_override/0 = SubResource("StandardMaterial3D_53")
+cast_shadow = 0
+
+[node name="InboundOutline" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-4, 0, -18, 3.5, 0, -18, 3.5, 0, -12.5, -4, 0, -12.5)
+width = 0.35
+color = Color(0.2471, 0.4549, 0.8784, 1)
+height = 0.014
+closed = true
+
+[node name="InboundText" type="Label3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -2.3, 0.016, -13.2)
+pixel_size = 0.0075
+shaded = true
+alpha_cut = 1
+texture_filter = 5
+modulate = Color(0.949, 0.949, 0.9412, 0.92)
+outline_size = 0
+text = "INBOUND"
+font = ExtResource("2_Inter-Bold")
+font_size = 96
+
+[node name="OutboundFill" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.006, -14)
+mesh = SubResource("PlaneMesh_56")
+surface_material_override/0 = SubResource("StandardMaterial3D_55")
+cast_shadow = 0
+
+[node name="OutboundOutline" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(6.8, 0, -17.2, 13.2, 0, -17.2, 13.2, 0, -10.8, 6.8, 0, -10.8)
+width = 0.3
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.014
+closed = true
+
+[node name="OutboundText" type="Label3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 10.4, 0.016, -11.5)
+pixel_size = 0.0075
+shaded = true
+alpha_cut = 1
+texture_filter = 5
+modulate = Color(0.949, 0.949, 0.9412, 0.92)
+outline_size = 0
+text = "OUTBOUND"
+font = ExtResource("2_Inter-Bold")
+font_size = 96
+
+[node name="WalkwayA" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-17.5, 0, -6, -4.5, 0, -6)
+width = 0.12
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+dash_length = 0.9
+gap_length = 0.6
+
+[node name="WalkwayB" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-10.2, 0, -7, -10.2, 0, -21)
+width = 0.12
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+dash_length = 0.9
+gap_length = 0.6
+
+[node name="WalkwayC" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-4.6, 0, -11.2, 5.5, 0, -11.2)
+width = 0.12
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+dash_length = 0.9
+gap_length = 0.6
+
+[node name="WalkwayD" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(5.2, 0, -8, 5.2, 0, -17.8)
+width = 0.12
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+dash_length = 0.9
+gap_length = 0.6
+
+[node name="RackLineA" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-14.4, 0, -7, -14.4, 0, -13)
+width = 0.1
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+
+[node name="RackLineB" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-8, 0, -11.8, -8, 0, -17.8)
+width = 0.1
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+
+[node name="DockLane0" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-6.6, 0, 1.4, -6.6, 0, 13)
+width = 0.22
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+
+[node name="DockLane1" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-2, 0, 1.4, -2, 0, 13)
+width = 0.22
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+
+[node name="DockLane2" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(2.6, 0, 1.4, 2.6, 0, 13)
+width = 0.22
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+
+[node name="DockStop1" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-6, 0, 2.6, -2.6, 0, 2.6)
+width = 0.3
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+
+[node name="DockStop2" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-1.4, 0, 2.6, 2, 0, 2.6)
+width = 0.3
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+
+[node name="ParkLine0" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-10, 0, 4, -10, 0, 11)
+width = 0.18
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+
+[node name="ParkLine1" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-13, 0, 4, -13, 0, 11)
+width = 0.18
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+
+[node name="ParkEdge" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-15.2, 0, 4, -7.4, 0, 4)
+width = 0.18
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+
+[node name="BayOutline" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(5.6, 0, -6.8, 11.6, 0, -6.8, 11.6, 0, 10, 5.6, 0, 10)
+width = 0.4
+color = Color(0.2471, 0.4549, 0.8784, 1)
+height = 0.012
+closed = true
+
+[node name="BayInner1" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(6.4, 0, -6.4, 6.4, 0, 9.6)
+width = 0.15
+color = Color(0.9294, 0.9294, 0.9098, 1)
+height = 0.012
+
+[node name="BayInner2" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(10.8, 0, -6.4, 10.8, 0, 9.6)
+width = 0.15
+color = Color(0.9294, 0.9294, 0.9098, 1)
+height = 0.012
+
+[node name="YardEdge" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-6.2, 0, 15.8, 14.8, 0, 15.8)
+width = 0.2
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+
+[node name="LaneCentre" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-6.2, 0, 17.8, 14.8, 0, 17.8)
+width = 0.16
+color = Color(0.9294, 0.9294, 0.9098, 1)
+height = 0.012
+dash_length = 1.8
+gap_length = 1.8
+
+[node name="LaneLeft" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-21, 0, -29, -21, 0, -1)
+width = 0.15
+color = Color(0.9294, 0.9294, 0.9098, 1)
+height = 0.012
+dash_length = 2
+gap_length = 2
+
+[node name="LaneBack" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-23, 0, -27, 21, 0, -27)
+width = 0.15
+color = Color(0.9294, 0.9294, 0.9098, 1)
+height = 0.012
+dash_length = 2
+gap_length = 2
+
+[node name="LaneWhite1" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(4.1, 0, 3, 4.1, 0, 15)
+width = 0.16
+color = Color(0.9294, 0.9294, 0.9098, 1)
+height = 0.012
+
+[node name="LaneWhite2" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(13.6, 0, -5, 13.6, 0, 15)
+width = 0.16
+color = Color(0.9294, 0.9294, 0.9098, 1)
+height = 0.012
+dash_length = 1.8
+gap_length = 1.8
+
+[node name="LaneWhite3" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(-14.4, 0, 12, -14.4, 0, 3.4)
+width = 0.14
+color = Color(0.9294, 0.9294, 0.9098, 1)
+height = 0.012
+dash_length = 1.5
+gap_length = 1.5
+
+[node name="BlockEdge" type="MeshInstance3D" parent="Markings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+script = ExtResource("25_marking_line")
+points = PackedVector3Array(3.3, 0, -6.8, 3.3, 0, 1.6)
+width = 0.18
+color = Color(0.9412, 0.7451, 0.1647, 1)
+height = 0.012
+
+[node name="Site" type="Node3D" parent="."]
+
+[node name="Bollard0" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.75, 0, 1)
+
+[node name="Bollard1" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+
+[node name="Bollard2" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 0, 1)
+
+[node name="Bollard3" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 0, 0.9)
+
+[node name="Bollard4" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 0, -0.3)
+
+[node name="Bollard5" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.3, 0, -6.4)
+
+[node name="Bollard6" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.9, 0, -6.4)
+
+[node name="Bollard7" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.6, 0, 2.5)
+
+[node name="Bollard8" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.8, 0, 2.5)
+
+[node name="Bollard9" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, 2.5)
+
+[node name="Bollard10" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.4, 0, 2.5)
+
+[node name="Bollard11" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.8, 0, -5)
+
+[node name="Bollard12" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.8, 0, -3.6)
+
+[node name="Bollard13" parent="Site" instance=ExtResource("26_bollard")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.8, 0, 10)
+
+[node name="Barrier0" parent="Site" instance=ExtResource("27_jersey_barri")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14.6, 0, 6.6)
+
+[node name="Barrier1" parent="Site" instance=ExtResource("27_jersey_barri")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14.6, 0, 8.8)
+
+[node name="Barrier2" parent="Site" instance=ExtResource("27_jersey_barri")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -14.6, 0, 11)
+
+[node name="Lamp0" parent="Site" instance=ExtResource("28_lamp_post")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16.8, 0, 4.5)
+
+[node name="Lamp1" parent="Site" instance=ExtResource("28_lamp_post")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16.8, 0, 11)
+
+[node name="Lamp2" parent="Site" instance=ExtResource("28_lamp_post")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -20.5, 0, -12)
+
+[node name="Lamp3" parent="Site" instance=ExtResource("28_lamp_post")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 14.6, 0, 12)
+
+[node name="Lamp4" parent="Site" instance=ExtResource("28_lamp_post")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.6, 0, -26)
+
+[node name="Cctv1" parent="Site" instance=ExtResource("29_cctv_pole")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 15, 0, -1.8)
+
+[node name="Booth" parent="Site" instance=ExtResource("30_office_booth")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19, 0, -2)
+
+[node name="FenceRight" type="Node3D" parent="Site"]
+script = ExtResource("31_fence_run")
+points = PackedVector3Array(15.7, 0, 19, 15.7, 0, -6.4)
+
+[node name="FenceBooth" type="Node3D" parent="Site"]
+script = ExtResource("31_fence_run")
+points = PackedVector3Array(16, 0, 3, 32, 0, 3)
+
+[node name="FenceLeft" type="Node3D" parent="Site"]
+script = ExtResource("31_fence_run")
+points = PackedVector3Array(-15.8, 0, 3.4, -15.8, 0, 12.9, -8.6, 0, 12.9)
+
+[node name="FenceLeftOuter" type="Node3D" parent="Site"]
+script = ExtResource("31_fence_run")
+points = PackedVector3Array(-24.6, 0, 3, -24.6, 0, -30)
+
+[node name="FenceBack" type="Node3D" parent="Site"]
+script = ExtResource("31_fence_run")
+points = PackedVector3Array(-24.6, 0, -30.6, 22.6, 0, -30.6)
+
+[node name="FenceFar" type="Node3D" parent="Site"]
+script = ExtResource("31_fence_run")
+points = PackedVector3Array(22.6, 0, -30.6, 22.6, 0, -7)
+
+[node name="Trees" type="Node3D" parent="."]
+
+[node name="BottomLeft" type="Node3D" parent="Trees"]
+script = ExtResource("35_tree_scatter")
+tree_scenes = Array[PackedScene]([ExtResource("32_tree_cone_a"), ExtResource("33_tree_cone_b"), ExtResource("34_tree_round")])
+points = PackedVector3Array(-7.5, 0, 14, -40, 0, 14)
+spacing = 3.2
+depth = 8
+random_seed = 11
+
+[node name="BottomFar" type="Node3D" parent="Trees"]
+script = ExtResource("35_tree_scatter")
+tree_scenes = Array[PackedScene]([ExtResource("32_tree_cone_a"), ExtResource("33_tree_cone_b"), ExtResource("34_tree_round")])
+points = PackedVector3Array(16, 0, 22, -40, 0, 22)
+spacing = 4
+depth = 8
+random_seed = 17
+
+[node name="LeftFront" type="Node3D" parent="Trees"]
+script = ExtResource("35_tree_scatter")
+tree_scenes = Array[PackedScene]([ExtResource("32_tree_cone_a"), ExtResource("33_tree_cone_b"), ExtResource("34_tree_round")])
+points = PackedVector3Array(-19.8, 0, 13, -19.8, 0, 2)
+spacing = 3.6
+depth = 6
+random_seed = 16
+
+[node name="BottomRight" type="Node3D" parent="Trees"]
+script = ExtResource("35_tree_scatter")
+tree_scenes = Array[PackedScene]([ExtResource("32_tree_cone_a"), ExtResource("33_tree_cone_b"), ExtResource("34_tree_round")])
+points = PackedVector3Array(17.5, 0, 6, 17.5, 0, 34)
+spacing = 4.6
+depth = 16
+random_seed = 12
+
+[node name="Left" type="Node3D" parent="Trees"]
+script = ExtResource("35_tree_scatter")
+tree_scenes = Array[PackedScene]([ExtResource("32_tree_cone_a"), ExtResource("33_tree_cone_b"), ExtResource("34_tree_round")])
+points = PackedVector3Array(-26.5, 0, 3, -26.5, 0, -40)
+spacing = 3
+depth = 12
+random_seed = 13
+
+[node name="LeftNear" type="Node3D" parent="Trees"]
+script = ExtResource("35_tree_scatter")
+tree_scenes = Array[PackedScene]([ExtResource("32_tree_cone_a"), ExtResource("33_tree_cone_b"), ExtResource("34_tree_round")])
+points = PackedVector3Array(-24, 0, 2, -24, 0, -22)
+spacing = 5
+depth = 2
+random_seed = 18
+
+[node name="Back" type="Node3D" parent="Trees"]
+script = ExtResource("35_tree_scatter")
+tree_scenes = Array[PackedScene]([ExtResource("32_tree_cone_a"), ExtResource("33_tree_cone_b"), ExtResource("34_tree_round")])
+points = PackedVector3Array(-27, 0, -33, 30, 0, -33)
+spacing = 4
+depth = 8
+random_seed = 14
+
+[node name="Right" type="Node3D" parent="Trees"]
+script = ExtResource("35_tree_scatter")
+tree_scenes = Array[PackedScene]([ExtResource("32_tree_cone_a"), ExtResource("33_tree_cone_b"), ExtResource("34_tree_round")])
+points = PackedVector3Array(24.5, 0, -36, 24.5, 0, 2)
+spacing = 4.5
+depth = 10
+random_seed = 15
+
+[node name="Workers" type="Node3D" parent="."]
+
+[node name="Worker1" parent="Workers" instance=ExtResource("37_worker")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.9, 0, -3.9)
+script = ExtResource("36_worker_actor")
+phase = 0.1
+patrol_points = PackedVector3Array(-12.9, 0, -3.9, -9, 0, -4.4)
+
+[node name="Worker2" parent="Workers" instance=ExtResource("38_worker_blueh")]
+transform = Transform3D(-0.1736, 0, 0.9848, 0, 1, 0, -0.9848, 0, -0.1736, -10, 0, -12.5)
+script = ExtResource("36_worker_actor")
+phase = 0.3
+
+[node name="Worker3" parent="Workers" instance=ExtResource("37_worker")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -19.5)
+script = ExtResource("36_worker_actor")
+phase = 0.5
+patrol_points = PackedVector3Array(-5, 0, -19.5, 1.5, 0, -19.6)
+
+[node name="Worker4" parent="Workers" instance=ExtResource("38_worker_blueh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -8.2)
+script = ExtResource("36_worker_actor")
+phase = 0.2
+patrol_points = PackedVector3Array(4.4, 0, -8, 4.6, 0, -16)
+
+[node name="Worker5" parent="Workers" instance=ExtResource("37_worker")]
+transform = Transform3D(0.5, 0, -0.866, 0, 1, 0, 0.866, 0, 0.5, 6, 0, -13.7)
+script = ExtResource("36_worker_actor")
+phase = 0.7
+
+[node name="Worker6" parent="Workers" instance=ExtResource("38_worker_blueh")]
+transform = Transform3D(0.5, 0, 0.866, 0, 1, 0, -0.866, 0, 0.5, -1, 0, -4)
+script = ExtResource("36_worker_actor")
+phase = 0.45
+patrol_points = PackedVector3Array(-2.6, 0, -3.2, 1.8, 0, -5.2)

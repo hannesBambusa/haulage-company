@@ -1,0 +1,117 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/storage_panel.gd" id="1_script"]
+[ext_resource type="Theme" path="res://ui/theme/terminal_theme.tres" id="2_theme"]
+[ext_resource type="Texture2D" path="res://ui/icons/close.svg" id="3_close"]
+
+[node name="StoragePanel" type="PanelContainer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -400.0
+offset_top = 345.0
+offset_right = -20.0
+offset_bottom = 900.0
+grow_horizontal = 0
+theme = ExtResource("2_theme")
+theme_type_variation = &"WindowPanel"
+script = ExtResource("1_script")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Header" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Margin/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HeaderLabel"
+text = "Storage"
+
+[node name="Close" type="Button" parent="Margin/VBox/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+tooltip_text = "Close"
+theme_type_variation = &"IconButton"
+theme_override_constants/icon_max_width = 22
+icon = ExtResource("3_close")
+icon_alignment = 1
+
+[node name="FreeLabel" type="Label" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StatusLabel"
+text = "Free pallet spaces: 0 / 0"
+
+[node name="Capacity" type="ProgressBar" parent="Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+max_value = 1.0
+show_percentage = false
+
+[node name="ReservedLabel" type="Label" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 17
+text = "Reserved for inbound: 0"
+
+[node name="Hint" type="Label" parent="Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 17
+text = "Click a pallet in INBOUND, then a green slot to store it."
+autowrap_mode = 3
+
+[node name="FilterRow" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="FilterLabel" type="Label" parent="Margin/VBox/FilterRow"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 16
+text = "Pallets"
+
+[node name="StateFilter" type="OptionButton" parent="Margin/VBox/FilterRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme_override_font_sizes/font_size = 16
+
+[node name="Sep" type="HSeparator" parent="Margin/VBox"]
+layout_mode = 2
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
+custom_minimum_size = Vector2(0, 220)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="List" type="VBoxContainer" parent="Margin/VBox/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Empty" type="Label" parent="Margin/VBox/Scroll/List"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "No active contracts. Accept one in Contracts."
+autowrap_mode = 3

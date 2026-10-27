@@ -1,0 +1,28 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://ui/hud.tscn" id="1_hud"]
+[ext_resource type="Script" path="res://scripts/sim/terminal_sim.gd" id="2_sim"]
+[ext_resource type="Script" path="res://scripts/sim/fake_truck_driver.gd" id="3_driver"]
+
+[node name="UIPreview" type="Node"]
+
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Color" type="ColorRect" parent="Background"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.22, 0.23, 0.25, 1)
+
+[node name="TerminalSim" type="Node" parent="."]
+script = ExtResource("2_sim")
+
+[node name="FakeTruckDriver" type="Node" parent="."]
+script = ExtResource("3_driver")
+sim_path = NodePath("../TerminalSim")
+
+[node name="HUD" parent="." instance=ExtResource("1_hud")]

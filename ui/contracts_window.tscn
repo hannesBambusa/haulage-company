@@ -1,0 +1,881 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/contracts_window.gd" id="script"]
+[ext_resource type="PackedScene" path="res://ui/contract_row.tscn" id="row_scene"]
+[ext_resource type="Texture2D" path="res://ui/icons/dashboard.svg" id="i_dashboard"]
+[ext_resource type="Texture2D" path="res://ui/icons/contracts.svg" id="i_contracts"]
+[ext_resource type="Texture2D" path="res://ui/icons/warehouse.svg" id="i_warehouse"]
+[ext_resource type="Texture2D" path="res://ui/icons/truck.svg" id="i_truck"]
+[ext_resource type="Texture2D" path="res://ui/icons/employees.svg" id="i_employees"]
+[ext_resource type="Texture2D" path="res://ui/icons/upgrades.svg" id="i_upgrades"]
+[ext_resource type="Texture2D" path="res://ui/icons/finance.svg" id="i_finance"]
+[ext_resource type="Texture2D" path="res://ui/icons/reports.svg" id="i_reports"]
+[ext_resource type="Texture2D" path="res://ui/icons/close.svg" id="i_close"]
+[ext_resource type="Texture2D" path="res://ui/icons/filter.svg" id="i_filter"]
+[ext_resource type="Texture2D" path="res://ui/icons/chevron_down.svg" id="i_chevron"]
+[ext_resource type="Texture2D" path="res://ui/icons/pallets.svg" id="i_pallets"]
+[ext_resource type="Texture2D" path="res://ui/icons/clock.svg" id="i_clock"]
+[ext_resource type="Texture2D" path="res://ui/icons/calendar.svg" id="i_calendar"]
+[ext_resource type="Texture2D" path="res://ui/icons/alert.svg" id="i_alert"]
+[ext_resource type="Texture2D" path="res://ui/icons/expand.svg" id="i_expand"]
+[ext_resource type="Texture2D" path="res://ui/icons/logo_layers.svg" id="i_logo"]
+[ext_resource type="Texture2D" path="res://ui/icons/logo_photo.svg" id="i_photo"]
+
+[sub_resource type="ButtonGroup" id="nav_group"]
+
+[sub_resource type="ButtonGroup" id="list_tab_group"]
+
+[sub_resource type="ButtonGroup" id="detail_tab_group"]
+
+[sub_resource type="StyleBoxFlat" id="roof_orange"]
+bg_color = Color(0.85, 0.42, 0.18, 1)
+
+[sub_resource type="StyleBoxFlat" id="roof_blue"]
+bg_color = Color(0.2, 0.36, 0.62, 1)
+
+[sub_resource type="StyleBoxFlat" id="roof_grey"]
+bg_color = Color(0.45, 0.47, 0.5, 1)
+
+[sub_resource type="StyleBoxFlat" id="yard"]
+bg_color = Color(0.3, 0.31, 0.33, 1)
+
+[node name="ContractsWindow" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("script")
+
+[node name="Nav" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 254.0
+offset_right = 238.0
+offset_bottom = -134.0
+grow_vertical = 2
+theme_type_variation = &"WindowPanel"
+
+[node name="Margin" type="MarginContainer" parent="Nav"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 34
+
+[node name="VBox" type="VBoxContainer" parent="Nav/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 13
+
+[node name="Dashboard" type="Button" parent="Nav/Margin/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"NavButton"
+toggle_mode = true
+button_group = SubResource("nav_group")
+text = "Dashboard"
+icon = ExtResource("i_dashboard")
+alignment = 0
+
+[node name="Contracts" type="Button" parent="Nav/Margin/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"NavButton"
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("nav_group")
+text = "Contracts"
+icon = ExtResource("i_contracts")
+alignment = 0
+
+[node name="Warehouse" type="Button" parent="Nav/Margin/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"NavButton"
+toggle_mode = true
+button_group = SubResource("nav_group")
+text = "Warehouse"
+icon = ExtResource("i_warehouse")
+alignment = 0
+
+[node name="Vehicles" type="Button" parent="Nav/Margin/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"NavButton"
+toggle_mode = true
+button_group = SubResource("nav_group")
+text = "Vehicles"
+icon = ExtResource("i_truck")
+alignment = 0
+
+[node name="Employees" type="Button" parent="Nav/Margin/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"NavButton"
+toggle_mode = true
+button_group = SubResource("nav_group")
+text = "Employees"
+icon = ExtResource("i_employees")
+alignment = 0
+
+[node name="Upgrades" type="Button" parent="Nav/Margin/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"NavButton"
+toggle_mode = true
+button_group = SubResource("nav_group")
+text = "Upgrades"
+icon = ExtResource("i_upgrades")
+alignment = 0
+
+[node name="Finance" type="Button" parent="Nav/Margin/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"NavButton"
+toggle_mode = true
+button_group = SubResource("nav_group")
+text = "Finance"
+icon = ExtResource("i_finance")
+alignment = 0
+
+[node name="Reports" type="Button" parent="Nav/Margin/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"NavButton"
+toggle_mode = true
+button_group = SubResource("nav_group")
+text = "Reports"
+icon = ExtResource("i_reports")
+alignment = 0
+
+[node name="Spacer" type="Control" parent="Nav/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Minimap" type="PanelContainer" parent="Nav/Margin/VBox"]
+custom_minimum_size = Vector2(195, 217)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"MinimapPanel"
+
+[node name="Map" type="Control" parent="Nav/Margin/VBox/Minimap"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Yard" type="Panel" parent="Nav/Margin/VBox/Minimap/Map"]
+layout_mode = 1
+anchor_left = 0.12
+anchor_top = 0.15
+anchor_right = 0.88
+anchor_bottom = 0.85
+mouse_filter = 2
+theme_override_styles/panel = SubResource("yard")
+
+[node name="RoofA" type="Panel" parent="Nav/Margin/VBox/Minimap/Map"]
+layout_mode = 1
+anchor_left = 0.18
+anchor_top = 0.2
+anchor_right = 0.55
+anchor_bottom = 0.48
+mouse_filter = 2
+theme_override_styles/panel = SubResource("roof_grey")
+
+[node name="RoofB" type="Panel" parent="Nav/Margin/VBox/Minimap/Map"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.3
+anchor_right = 0.78
+anchor_bottom = 0.48
+mouse_filter = 2
+theme_override_styles/panel = SubResource("roof_orange")
+
+[node name="RoofC" type="Panel" parent="Nav/Margin/VBox/Minimap/Map"]
+layout_mode = 1
+anchor_left = 0.3
+anchor_top = 0.55
+anchor_right = 0.62
+anchor_bottom = 0.78
+mouse_filter = 2
+theme_override_styles/panel = SubResource("roof_blue")
+
+[node name="RoofD" type="Panel" parent="Nav/Margin/VBox/Minimap/Map"]
+layout_mode = 1
+anchor_left = 0.66
+anchor_top = 0.55
+anchor_right = 0.82
+anchor_bottom = 0.78
+mouse_filter = 2
+theme_override_styles/panel = SubResource("roof_grey")
+
+[node name="TerminalRow" type="HBoxContainer" parent="Nav/Margin/VBox"]
+layout_mode = 2
+
+[node name="Indent" type="Control" parent="Nav/Margin/VBox/TerminalRow"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Text" type="VBoxContainer" parent="Nav/Margin/VBox/TerminalRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="Name" type="Label" parent="Nav/Margin/VBox/TerminalRow/Text"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Terminal A"
+
+[node name="Area" type="Label" parent="Nav/Margin/VBox/TerminalRow/Text"]
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 17
+text = "3,200 m²"
+
+[node name="Expand" type="TextureRect" parent="Nav/Margin/VBox/TerminalRow"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("i_expand")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Main" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 240.0
+offset_top = 254.0
+offset_right = -135.0
+offset_bottom = -109.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"WindowPanel"
+
+[node name="Margin" type="MarginContainer" parent="Main"]
+layout_mode = 2
+theme_override_constants/margin_left = 25
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 17
+theme_override_constants/margin_bottom = 4
+
+[node name="VBox" type="VBoxContainer" parent="Main/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Header" type="HBoxContainer" parent="Main/Margin/VBox"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Main/Margin/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"TitleLabel"
+theme_override_font_sizes/font_size = 34
+text = "Contracts"
+
+[node name="Close" type="Button" parent="Main/Margin/VBox/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+size_flags_vertical = 0
+focus_mode = 0
+tooltip_text = "Close"
+theme_type_variation = &"IconButton"
+theme_override_constants/icon_max_width = 26
+icon = ExtResource("i_close")
+icon_alignment = 1
+
+[node name="Body" type="HBoxContainer" parent="Main/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 26
+
+[node name="ListCol" type="VBoxContainer" parent="Main/Margin/VBox/Body"]
+custom_minimum_size = Vector2(884, 0)
+layout_mode = 2
+theme_override_constants/separation = 21
+
+[node name="TopGap" type="Control" parent="Main/Margin/VBox/Body/ListCol"]
+custom_minimum_size = Vector2(0, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TabsRow" type="HBoxContainer" parent="Main/Margin/VBox/Body/ListCol"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Available" type="Button" parent="Main/Margin/VBox/Body/ListCol/TabsRow"]
+custom_minimum_size = Vector2(132, 40)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"SegmentButton"
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("list_tab_group")
+text = "Available"
+
+[node name="Active" type="Button" parent="Main/Margin/VBox/Body/ListCol/TabsRow"]
+custom_minimum_size = Vector2(132, 40)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"SegmentButton"
+toggle_mode = true
+button_group = SubResource("list_tab_group")
+text = "Active (4)"
+
+[node name="Completed" type="Button" parent="Main/Margin/VBox/Body/ListCol/TabsRow"]
+custom_minimum_size = Vector2(132, 40)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"SegmentButton"
+toggle_mode = true
+button_group = SubResource("list_tab_group")
+text = "Completed"
+
+[node name="History" type="Button" parent="Main/Margin/VBox/Body/ListCol/TabsRow"]
+custom_minimum_size = Vector2(132, 40)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"SegmentButton"
+toggle_mode = true
+button_group = SubResource("list_tab_group")
+text = "History"
+
+[node name="Spacer" type="Control" parent="Main/Margin/VBox/Body/ListCol/TabsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="CargoFilter" type="Button" parent="Main/Margin/VBox/Body/ListCol/TabsRow"]
+custom_minimum_size = Vector2(184, 40)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 16
+theme_override_constants/icon_max_width = 18
+text = "All cargo types"
+icon = ExtResource("i_chevron")
+alignment = 0
+icon_alignment = 2
+
+[node name="Gap" type="Control" parent="Main/Margin/VBox/Body/ListCol/TabsRow"]
+custom_minimum_size = Vector2(6, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="FilterButton" type="Button" parent="Main/Margin/VBox/Body/ListCol/TabsRow"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+focus_mode = 0
+theme_override_constants/icon_max_width = 22
+icon = ExtResource("i_filter")
+icon_alignment = 1
+
+[node name="Scroll" type="ScrollContainer" parent="Main/Margin/VBox/Body/ListCol"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="RowList" type="VBoxContainer" parent="Main/Margin/VBox/Body/ListCol/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 7
+
+[node name="DetailMargin" type="MarginContainer" parent="Main/Margin/VBox/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_bottom = 17
+
+[node name="Detail" type="PanelContainer" parent="Main/Margin/VBox/Body/DetailMargin"]
+layout_mode = 2
+theme_type_variation = &"InsetPanel"
+
+[node name="VBox" type="VBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Header" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Logo" type="PanelContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Header"]
+custom_minimum_size = Vector2(65, 65)
+layout_mode = 2
+theme_type_variation = &"LogoTile"
+
+[node name="DetailLogo" type="TextureRect" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Header/Logo"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("i_logo")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Names" type="VBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="DetailCompany" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Header/Names"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 25
+text = "Nordic Build"
+
+[node name="DetailNumber" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Header/Names"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 18
+text = "Contract #NB-2610-04"
+
+[node name="DetailBadge" type="PanelContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"BadgePriority"
+
+[node name="DetailBadgeLabel" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Header/DetailBadge"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Standard"
+
+[node name="Tabs" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Details" type="Button" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Tabs"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme_type_variation = &"SegmentButton"
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("detail_tab_group")
+text = "Details"
+
+[node name="Cargo" type="Button" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Tabs"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme_type_variation = &"SegmentButton"
+toggle_mode = true
+button_group = SubResource("detail_tab_group")
+text = "Cargo"
+
+[node name="Requirements" type="Button" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Tabs"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme_type_variation = &"SegmentButton"
+toggle_mode = true
+button_group = SubResource("detail_tab_group")
+text = "Requirements"
+
+[node name="Payment" type="Button" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Tabs"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme_type_variation = &"SegmentButton"
+toggle_mode = true
+button_group = SubResource("detail_tab_group")
+text = "Payment"
+
+[node name="Scroll" type="ScrollContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="VBox" type="VBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 14
+
+[node name="DescBox" type="PanelContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox"]
+layout_mode = 2
+theme_type_variation = &"InsetPanel"
+
+[node name="VBox" type="VBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox"]
+layout_mode = 2
+theme_override_constants/separation = 26
+
+[node name="Top" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Text" type="VBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="DescTitle" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Top/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 20
+text = "Construction materials"
+
+[node name="DescBody" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Top/Text"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 16
+theme_override_constants/line_spacing = 6
+text = "Delivery of building materials for a local construction project."
+autowrap_mode = 3
+
+[node name="Photo" type="TextureRect" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Top"]
+custom_minimum_size = Vector2(170, 116)
+layout_mode = 2
+size_flags_vertical = 0
+texture = ExtResource("i_photo")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Stats" type="GridContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox"]
+layout_mode = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 34
+columns = 2
+
+[node name="Stat0" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+
+[node name="Icon" type="TextureRect" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat0"]
+modulate = Color(0.784, 0.82, 0.863, 1)
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("i_pallets")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="VBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat0"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StatValue0" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat0/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "-"
+
+[node name="StatSub0" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat0/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 16
+text = "-"
+
+[node name="Stat1" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+
+[node name="Icon" type="TextureRect" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat1"]
+modulate = Color(0.784, 0.82, 0.863, 1)
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("i_clock")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="VBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat1"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StatValue1" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat1/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "-"
+
+[node name="StatSub1" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat1/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 16
+text = "-"
+
+[node name="Stat2" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+
+[node name="Icon" type="TextureRect" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat2"]
+modulate = Color(0.784, 0.82, 0.863, 1)
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("i_calendar")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="VBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat2"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StatValue2" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat2/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "-"
+
+[node name="StatSub2" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat2/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 16
+text = "-"
+
+[node name="Stat3" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+
+[node name="Icon" type="TextureRect" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat3"]
+modulate = Color(0.784, 0.82, 0.863, 1)
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("i_calendar")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="VBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat3"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StatValue3" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat3/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "-"
+
+[node name="StatSub3" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/DescBox/VBox/Stats/Stat3/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 16
+text = "-"
+
+[node name="Boxes" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PayBox" type="PanelContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes"]
+custom_minimum_size = Vector2(262, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"InsetPanel"
+
+[node name="VBox" type="VBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/PayBox"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="PayHead" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/PayBox/VBox"]
+layout_mode = 2
+
+[node name="Key" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/PayBox/VBox/PayHead"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 17
+text = "Payment"
+
+[node name="PayTotal" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/PayBox/VBox/PayHead"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "-"
+theme_type_variation = &"MoneyLabel"
+
+[node name="PayHandling" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/PayBox/VBox"]
+layout_mode = 2
+
+[node name="Key" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/PayBox/VBox/PayHandling"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 16
+text = "Handling fee"
+
+[node name="PayHandlingValue" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/PayBox/VBox/PayHandling"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "-"
+
+[node name="PayStorage" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/PayBox/VBox"]
+layout_mode = 2
+
+[node name="Key" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/PayBox/VBox/PayStorage"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 16
+text = "Storage fee"
+
+[node name="PayStorageValue" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/PayBox/VBox/PayStorage"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "-"
+
+[node name="TimeBox" type="PanelContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"InsetPanel"
+
+[node name="VBox" type="VBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/TimeBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Head" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/TimeBox/VBox"]
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 15
+text = "Est. time per truck"
+
+[node name="Line0" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/TimeBox/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Icon" type="TextureRect" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/TimeBox/VBox/Line0"]
+modulate = Color(0.784, 0.82, 0.863, 1)
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("i_pallets")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TimeLine0" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/TimeBox/VBox/Line0"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 16
+text = "-"
+
+[node name="Line1" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/TimeBox/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Icon" type="TextureRect" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/TimeBox/VBox/Line1"]
+modulate = Color(0.784, 0.82, 0.863, 1)
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("i_pallets")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TimeLine1" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/TimeBox/VBox/Line1"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 16
+text = "-"
+
+[node name="Line2" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/TimeBox/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Icon" type="TextureRect" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/TimeBox/VBox/Line2"]
+modulate = Color(0.784, 0.82, 0.863, 1)
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("i_pallets")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TimeLine2" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Scroll/VBox/Boxes/TimeBox/VBox/Line2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 16
+text = "-"
+
+[node name="Footer" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Warning" type="PanelContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Footer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"WarningPanel"
+
+[node name="HBox" type="HBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Footer/Warning"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Icon" type="TextureRect" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Footer/Warning/HBox"]
+modulate = Color(0.961, 0.725, 0.259, 1)
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+size_flags_vertical = 0
+texture = ExtResource("i_alert")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="VBoxContainer" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Footer/Warning/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="WarnTitle" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Footer/Warning/HBox/Text"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.961, 0.725, 0.259, 1)
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 16
+text = "Storage space required"
+
+[node name="WarnBody" type="Label" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Footer/Warning/HBox/Text"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 14
+theme_override_constants/line_spacing = 4
+text = "-"
+autowrap_mode = 3
+
+[node name="AcceptContract" type="Button" parent="Main/Margin/VBox/Body/DetailMargin/Detail/VBox/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 84)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+theme_type_variation = &"AcceptButton"
+theme_override_font_sizes/font_size = 22
+text = "Accept Contract"

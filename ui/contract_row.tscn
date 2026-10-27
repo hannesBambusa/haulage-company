@@ -1,0 +1,180 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/contract_row.gd" id="1_row"]
+[ext_resource type="Texture2D" path="res://ui/icons/pallets.svg" id="2_pallets"]
+[ext_resource type="Texture2D" path="res://ui/icons/clock.svg" id="3_clock"]
+[ext_resource type="Texture2D" path="res://ui/icons/logo_layers.svg" id="4_logo"]
+
+[node name="ContractRow" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 90)
+mouse_filter = 0
+theme_type_variation = &"ContractRow"
+script = ExtResource("1_row")
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="Logo" type="PanelContainer" parent="HBox"]
+custom_minimum_size = Vector2(65, 65)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"LogoTile"
+
+[node name="LogoIcon" type="TextureRect" parent="HBox/Logo"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("4_logo")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Gap" type="Control" parent="HBox"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NameCol" type="VBoxContainer" parent="HBox"]
+custom_minimum_size = Vector2(188, 0)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="Company" type="Label" parent="HBox/NameCol"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 20
+text = "Nordic Build"
+
+[node name="Cargo" type="Label" parent="HBox/NameCol"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 16
+text = "Construction materials"
+
+[node name="Pack" type="Label" parent="HBox/NameCol"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 16
+text = "Pallets (Euro)"
+
+[node name="PalletsCol" type="HBoxContainer" parent="HBox"]
+custom_minimum_size = Vector2(148, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Icon" type="TextureRect" parent="HBox/PalletsCol"]
+modulate = Color(0.784, 0.82, 0.863, 1)
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_pallets")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="VBoxContainer" parent="HBox/PalletsCol"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="Pallets" type="Label" parent="HBox/PalletsCol/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"BodyLabel"
+theme_override_font_sizes/font_size = 18
+text = "24 pallets"
+
+[node name="Tons" type="Label" parent="HBox/PalletsCol/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 16
+text = "40 t"
+
+[node name="DaysCol" type="HBoxContainer" parent="HBox"]
+custom_minimum_size = Vector2(190, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Icon" type="TextureRect" parent="HBox/DaysCol"]
+modulate = Color(0.784, 0.82, 0.863, 1)
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("3_clock")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="VBoxContainer" parent="HBox/DaysCol"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="Days" type="Label" parent="HBox/DaysCol/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"BodyLabel"
+theme_override_font_sizes/font_size = 18
+text = "3–5 days"
+
+[node name="Scope" type="Label" parent="HBox/DaysCol/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 15
+text = "Handling + storage"
+
+[node name="PriceCol" type="VBoxContainer" parent="HBox"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Price" type="Label" parent="HBox/PriceCol"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MoneyLabel"
+theme_override_font_sizes/font_size = 23
+text = "$ 4,800"
+
+[node name="Badge" type="PanelContainer" parent="HBox/PriceCol"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(82, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+theme_type_variation = &"BadgeStandard"
+
+[node name="BadgeLabel" type="Label" parent="HBox/PriceCol/Badge"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Standard"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Accept" type="Button" parent="HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 43)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+theme_type_variation = &"AcceptButton"
+text = "Accept"

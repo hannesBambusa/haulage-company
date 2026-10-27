@@ -1,0 +1,483 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
+[ext_resource type="Theme" path="res://ui/theme/terminal_theme.tres" id="2_theme"]
+[ext_resource type="Texture2D" path="res://ui/icons/truck.svg" id="3_truck"]
+[ext_resource type="Texture2D" path="res://ui/icons/calendar.svg" id="4_cal"]
+[ext_resource type="Texture2D" path="res://ui/icons/pause.svg" id="5_pause"]
+[ext_resource type="Texture2D" path="res://ui/icons/play.svg" id="6_play"]
+[ext_resource type="Texture2D" path="res://ui/icons/help.svg" id="7_help"]
+[ext_resource type="Texture2D" path="res://ui/icons/gear.svg" id="8_gear"]
+[ext_resource type="Texture2D" path="res://ui/icons/menu.svg" id="9_menu"]
+[ext_resource type="Texture2D" path="res://ui/icons/contracts.svg" id="10_contracts"]
+[ext_resource type="Texture2D" path="res://ui/icons/storage.svg" id="11_storage"]
+[ext_resource type="Texture2D" path="res://ui/icons/staff.svg" id="12_staff"]
+[ext_resource type="Texture2D" path="res://ui/icons/equipment.svg" id="13_equipment"]
+[ext_resource type="Texture2D" path="res://ui/icons/upgrades.svg" id="14_upgrades"]
+[ext_resource type="Texture2D" path="res://ui/icons/alert.svg" id="15_alert"]
+[ext_resource type="PackedScene" path="res://ui/contracts_window.tscn" id="16_contracts_window"]
+[ext_resource type="Texture2D" path="res://ui/icons/truck_solid.svg" id="17_truck_solid"]
+[ext_resource type="Texture2D" path="res://ui/icons/chevron_right.svg" id="18_chevron"]
+[ext_resource type="PackedScene" path="res://ui/storage_panel.tscn" id="19_storage_panel"]
+[ext_resource type="PackedScene" path="res://ui/pallet_panel.tscn" id="20_pallet_panel"]
+
+[sub_resource type="StyleBoxFlat" id="dot_style"]
+bg_color = Color(0.204, 0.780, 0.349, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="alert_dot_style"]
+bg_color = Color(0.894, 0.208, 0.208, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="ButtonGroup" id="tab_group"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+
+[node name="TopBar" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 71.0
+grow_horizontal = 2
+theme_type_variation = &"TopBar"
+
+[node name="Bar" type="Control" parent="Root/TopBar"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Left" type="HBoxContainer" parent="Root/TopBar/Bar"]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 37.0
+offset_right = 460.0
+grow_vertical = 2
+theme_override_constants/separation = 22
+
+[node name="TruckIcon" type="TextureRect" parent="Root/TopBar/Bar/Left"]
+modulate = Color(0.82, 0.85, 0.89, 1)
+custom_minimum_size = Vector2(46, 46)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("17_truck_solid")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="Root/TopBar/Bar/Left"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"TitleLabel"
+text = "TERMINAL MANAGER"
+
+[node name="Center" type="HBoxContainer" parent="Root/TopBar/Bar"]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 609.0
+offset_right = 1300.0
+grow_vertical = 2
+theme_override_constants/separation = 36
+
+[node name="Money" type="Label" parent="Root/TopBar/Bar/Center"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"MoneyLabel"
+text = "$ 12,450"
+
+[node name="Sep1" type="VSeparator" parent="Root/TopBar/Bar/Center"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Clock" type="HBoxContainer" parent="Root/TopBar/Bar/Center"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="CalendarIcon" type="TextureRect" parent="Root/TopBar/Bar/Center/Clock"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("4_cal")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DayLabel" type="Label" parent="Root/TopBar/Bar/Center/Clock"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 28
+text = "Day 3 · 09:40"
+
+[node name="Sep2" type="VSeparator" parent="Root/TopBar/Bar/Center"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="PauseButton" type="Button" parent="Root/TopBar/Bar/Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+tooltip_text = "Pause (Space)"
+theme_type_variation = &"IconButton"
+theme_override_constants/icon_max_width = 40
+icon = ExtResource("5_pause")
+icon_alignment = 1
+
+[node name="Sep3" type="VSeparator" parent="Root/TopBar/Bar/Center"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="SpeedButton" type="Button" parent="Root/TopBar/Bar/Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+tooltip_text = "Game speed (Tab)"
+theme_type_variation = &"IconButton"
+theme_override_constants/h_separation = 2
+text = "1x"
+icon = ExtResource("6_play")
+
+[node name="Right" type="HBoxContainer" parent="Root/TopBar/Bar"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_right = -38.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/separation = 29
+alignment = 2
+
+[node name="HelpButton" type="Button" parent="Root/TopBar/Bar/Right"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+tooltip_text = "Help"
+theme_type_variation = &"IconButton"
+icon = ExtResource("7_help")
+icon_alignment = 1
+expand_icon = true
+
+[node name="SepGearButton" type="VSeparator" parent="Root/TopBar/Bar/Right"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="GearButton" type="Button" parent="Root/TopBar/Bar/Right"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+tooltip_text = "Settings"
+theme_type_variation = &"IconButton"
+icon = ExtResource("8_gear")
+icon_alignment = 1
+expand_icon = true
+
+[node name="SepMenuButton" type="VSeparator" parent="Root/TopBar/Bar/Right"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="MenuButton" type="Button" parent="Root/TopBar/Bar/Right"]
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+tooltip_text = "Menu"
+theme_type_variation = &"IconButton"
+icon = ExtResource("9_menu")
+icon_alignment = 1
+expand_icon = true
+
+[node name="DockPanel" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -351.0
+offset_top = 90.0
+offset_right = -20.0
+offset_bottom = 400.0
+grow_horizontal = 0
+
+[node name="VBox" type="VBoxContainer" parent="Root/DockPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="DockTitle" type="Label" parent="Root/DockPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "Dock 1"
+
+[node name="StatusRow" type="HBoxContainer" parent="Root/DockPanel/VBox"]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="StatusDot" type="Panel" parent="Root/DockPanel/VBox/StatusRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("dot_style")
+
+[node name="StatusLabel" type="Label" parent="Root/DockPanel/VBox/StatusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StatusLabel"
+text = "Unloading"
+
+[node name="Progress" type="ProgressBar" parent="Root/DockPanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+max_value = 8.0
+step = 1.0
+value = 4.0
+show_percentage = false
+
+[node name="PalletsLabel" type="Label" parent="Root/DockPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "4 / 8 pallets"
+
+[node name="Sep" type="HSeparator" parent="Root/DockPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="CurrentTruck" type="Label" parent="Root/DockPanel/VBox"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 21
+text = "Current truck"
+
+[node name="TruckRow" type="HBoxContainer" parent="Root/DockPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TruckIcon" type="TextureRect" parent="Root/DockPanel/VBox/TruckRow"]
+modulate = Color(0.82, 0.85, 0.89, 1)
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("17_truck_solid")
+flip_h = true
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TruckText" type="VBoxContainer" parent="Root/DockPanel/VBox/TruckRow"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="TruckCompany" type="Label" parent="Root/DockPanel/VBox/TruckRow/TruckText"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "LogiTrans"
+
+[node name="TruckCargo" type="Label" parent="Root/DockPanel/VBox/TruckRow/TruckText"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 20
+text = "General cargo"
+
+[node name="AlertToast" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -385.0
+offset_top = 81.0
+offset_right = -20.0
+offset_bottom = 160.0
+grow_horizontal = 0
+
+[node name="HBox" type="HBoxContainer" parent="Root/AlertToast"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="AlertDot" type="Panel" parent="Root/AlertToast/HBox"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("alert_dot_style")
+
+[node name="AlertIcon" type="TextureRect" parent="Root/AlertToast/HBox/AlertDot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+texture = ExtResource("15_alert")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="VBoxContainer" parent="Root/AlertToast/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="AlertTitle" type="Label" parent="Root/AlertToast/HBox/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 19
+text = "Storage space low"
+
+[node name="AlertBody" type="Label" parent="Root/AlertToast/HBox/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 16
+text = "Only 12 free pallet spaces left"
+
+[node name="Chevron" type="TextureRect" parent="Root/AlertToast/HBox"]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("18_chevron")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ContractsWindow" parent="Root" instance=ExtResource("16_contracts_window")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="StoragePanel" parent="Root" instance=ExtResource("19_storage_panel")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="PalletPanel" parent="Root" instance=ExtResource("20_pallet_panel")]
+unique_name_in_owner = true
+layout_mode = 0
+
+[node name="TabStrip" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -474.0
+offset_top = -133.0
+offset_right = 474.0
+offset_bottom = -26.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_type_variation = &"TabStrip"
+
+[node name="Tabs" type="HBoxContainer" parent="Root/TabStrip"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Contracts" type="Button" parent="Root/TabStrip/Tabs"]
+custom_minimum_size = Vector2(0, 78)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("tab_group")
+text = "Contracts"
+icon = ExtResource("10_contracts")
+
+[node name="Sep1" type="VSeparator" parent="Root/TabStrip/Tabs"]
+custom_minimum_size = Vector2(0, 66)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Storage" type="Button" parent="Root/TabStrip/Tabs"]
+custom_minimum_size = Vector2(0, 78)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_group = SubResource("tab_group")
+text = "Storage"
+icon = ExtResource("11_storage")
+
+[node name="Sep2" type="VSeparator" parent="Root/TabStrip/Tabs"]
+custom_minimum_size = Vector2(0, 66)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Staff" type="Button" parent="Root/TabStrip/Tabs"]
+custom_minimum_size = Vector2(0, 78)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_group = SubResource("tab_group")
+text = "Staff"
+icon = ExtResource("12_staff")
+
+[node name="Sep3" type="VSeparator" parent="Root/TabStrip/Tabs"]
+custom_minimum_size = Vector2(0, 66)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Equipment" type="Button" parent="Root/TabStrip/Tabs"]
+custom_minimum_size = Vector2(0, 78)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_group = SubResource("tab_group")
+text = "Equipment"
+icon = ExtResource("13_equipment")
+
+[node name="Sep4" type="VSeparator" parent="Root/TabStrip/Tabs"]
+custom_minimum_size = Vector2(0, 66)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Upgrades" type="Button" parent="Root/TabStrip/Tabs"]
+custom_minimum_size = Vector2(0, 78)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_group = SubResource("tab_group")
+text = "Upgrades"
+icon = ExtResource("14_upgrades")

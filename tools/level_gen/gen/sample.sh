@@ -1,0 +1,3 @@
+# sample.sh shot.png rects...
+S=$1; shift
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path /Users/hannesalm/code/games/haulage-company --script "$(dirname "$0")/sample.gd" -- /Users/hannesalm/code/games/haulage-company/docs/reference/gameplay-target.png $S "$@" 2>&1 | grep "("

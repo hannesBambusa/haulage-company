@@ -1,0 +1,131 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/pallet_panel.gd" id="1_script"]
+[ext_resource type="Theme" path="res://ui/theme/terminal_theme.tres" id="2_theme"]
+[ext_resource type="Texture2D" path="res://ui/icons/close.svg" id="3_close"]
+
+[node name="PalletPanel" type="PanelContainer"]
+offset_left = 20.0
+offset_top = 84.0
+offset_right = 440.0
+offset_bottom = 560.0
+theme = ExtResource("2_theme")
+theme_type_variation = &"WindowPanel"
+script = ExtResource("1_script")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Margin/VBox/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HeaderLabel"
+text = "Pallet PL-000000"
+
+[node name="Close" type="Button" parent="Margin/VBox/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+tooltip_text = "Close"
+theme_type_variation = &"IconButton"
+theme_override_constants/icon_max_width = 22
+icon = ExtResource("3_close")
+icon_alignment = 1
+
+[node name="ContractRow" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Swatch" type="ColorRect" parent="Margin/VBox/ContractRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Company" type="Label" parent="Margin/VBox/ContractRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Company"
+clip_text = true
+
+[node name="Cargo" type="Label" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SubLabel"
+theme_override_font_sizes/font_size = 16
+text = "Cargo"
+
+[node name="Info" type="PanelContainer" parent="Margin/VBox"]
+layout_mode = 2
+theme_type_variation = &"InsetPanel"
+
+[node name="Grid" type="GridContainer" parent="Margin/VBox/Info"]
+layout_mode = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 4
+columns = 2
+
+[node name="StateKey" type="Label" parent="Margin/VBox/Info/Grid"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 16
+text = "State"
+
+[node name="State" type="Label" parent="Margin/VBox/Info/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StatusLabel"
+text = "In truck"
+
+[node name="LocationKey" type="Label" parent="Margin/VBox/Info/Grid"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 16
+text = "Location"
+
+[node name="Location" type="Label" parent="Margin/VBox/Info/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "T-Dock1-01"
+
+[node name="SendOut" type="Button" parent="Margin/VBox"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"AcceptButton"
+text = "Send to outbound"
+
+[node name="HistoryTitle" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 16
+text = "History"
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="History" type="VBoxContainer" parent="Margin/VBox/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
