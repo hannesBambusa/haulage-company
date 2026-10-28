@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="Theme" path="res://ui/theme/terminal_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/truck_timers.gd" id="30_truck_timers"]
 [ext_resource type="Texture2D" path="res://ui/icons/truck.svg" id="3_truck"]
 [ext_resource type="Texture2D" path="res://ui/icons/calendar.svg" id="4_cal"]
 [ext_resource type="Texture2D" path="res://ui/icons/pause.svg" id="5_pause"]
@@ -311,6 +312,15 @@ layout_mode = 2
 theme_type_variation = &"SubLabel"
 theme_override_font_sizes/font_size = 20
 text = "General cargo"
+
+[node name="TruckTimers" type="PanelContainer" parent="Root"]
+layout_mode = 1
+offset_left = 20.0
+offset_top = 90.0
+offset_right = 340.0
+offset_bottom = 140.0
+mouse_filter = 2
+script = ExtResource("30_truck_timers")
 
 [node name="AlertToast" type="PanelContainer" parent="Root"]
 unique_name_in_owner = true

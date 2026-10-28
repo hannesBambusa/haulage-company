@@ -450,14 +450,20 @@ func traffic_working() -> bool:
 	return job != null and not _waiting_lock
 
 
+## Total yield order (higher wins, never equal): right-of-way token >
+## working vehicle > working jack worker > idle vehicle or jack > duty
+## worker (WorkerActor: -90000); ties by lower id. A forklift always goes
+## first: the token never lifts a jack above a working forklift.
 func traffic_priority() -> int:
 	var p: int = 0
 	if traffic != null and traffic.token_holder == self:
-		p += 100000
+		p += 100000 if traffic_kind() == Traffic.Kind.VEHICLE else 3000
 	if bay != null or _held_lock != null:
 		p += 4000
 	if _loaded():
 		p += 2000
+	if job != null and traffic_kind() == Traffic.Kind.VEHICLE:
+		p += 10000
 	if job == null:
 		p -= 50000  # idle always yields to one with work
 	return p - uid
@@ -478,7 +484,7 @@ func traffic_reroute() -> bool:
 func traffic_give_way(winner: Node) -> bool:
 	if _leg != null and not _leg_abortable:
 		return false
-	if traffic != null and traffic.token_holder == self:
+	if traffic != null and traffic.token_holder == self and Traffic.priority(winner) < traffic_priority():
 		return false
 	if job == null and traffic != null and traffic.board != null and traffic.board.holds.has(self):
 		return false  # a worker is servicing it: it does not move

@@ -26,6 +26,9 @@ func _run() -> void:
 	change_scene_to_file("res://scenes/main.tscn")
 	await process_frame
 	await process_frame
+	var auto_flow_node: Node = get_first_node_in_group(&"cargo_flow")
+	if auto_flow_node != null:
+		auto_flow_node.set(&"auto_flow", false)  # no auto put-away: this test times the docks alone
 	# untyped: these scripts use the GameState autoload, which --script mode
 	# only registers after this test script has compiled
 	var driver: Node = current_scene.find_child("TruckDriver1", true, false)

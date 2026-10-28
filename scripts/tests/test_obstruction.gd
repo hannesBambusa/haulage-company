@@ -45,6 +45,7 @@ func _run() -> void:
 	if manager == null or flow == null or _grid == null or _board == null:
 		_finish("missing gameplay nodes")
 		return
+	flow.auto_flow = false  # manual orders only; test_auto_flow covers the fallback
 
 	# seed: A deep in an INBOUND column, B in front of it
 	_contract = manager.make_contract(ContractCatalog.find("QuickShip"), {"pallets": 2, "storage_days": 1})

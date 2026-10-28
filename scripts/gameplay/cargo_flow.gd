@@ -469,17 +469,26 @@ func _auto_putaway() -> void:
 			free_in += 1
 	var full: bool = free_in <= GameplayConfig.AUTO_PUTAWAY_FREE_SLOTS
 	var now: float = GameState.now()
-	waiting.sort_custom(func(a: CargoUnit, b: CargoUnit) -> bool:
-		return float(a.get_meta(&"inbound_at", 0.0)) < float(b.get_meta(&"inbound_at", 0.0)))
+	waiting.sort_custom(func(a: CargoUnit, b: CargoUnit) -> bool: return _inbound_since(a) < _inbound_since(b))
 	for u: CargoUnit in waiting:
-		var since: float = float(u.get_meta(&"inbound_at", now))
+		var since: float = _inbound_since(u)
 		if not full and (now - since) * 60.0 < GameplayConfig.AUTO_PUTAWAY_DELAY:
 			continue
 		if not _auto_store(u):
 			return
 
 
+## Game time (minutes) the unit was set down in INBOUND, from its history.
+func _inbound_since(u: CargoUnit) -> float:
+	for e: Dictionary in u.history:
+		if int(e.state) == CargoUnit.State.INBOUND:
+			return float(e.time)
+	return GameState.now()
+
+
 ## Queues one automatic put-away. False when nobody can take it right now.
+## The jack and the Rack forklift work in parallel; Traffic's yield order
+## keeps them from waiting on each other.
 func _auto_store(u: CargoUnit) -> bool:
 	var targets: Array[StorageSlot] = []
 	for s: StorageSlot in _grid.store_targets():

@@ -96,6 +96,33 @@ func _go_home() -> void:
 		actor.play_animation(&"Idle")
 
 
+## Loaded, before pushing in: a rack L1 slot sits on the bottom beam, so the
+## pallet is pumped up to just over it first (a floor slot needs nothing).
+func _prepare_approach(slot: StorageSlot, loaded: bool) -> void:
+	if not loaded or job == null or (job as CarryJob).unit.node == null:
+		return
+	var node: Node3D = (job as CarryJob).unit.node
+	var want: float = slot.position.y + 0.03
+	var start: float = node.global_position.y
+	if want <= start + 0.005:
+		return
+	actor.play_animation(&"Idle")
+	await _animate(maxf(0.4, (want - start) * 6.0), func(t: float) -> void:
+		node.global_position.y = lerpf(start, want, t))
+
+
+## At the slot: lower the pallet onto it (floor or beam), then let go.
+func _place(j: CarryJob) -> void:
+	actor.play_animation(&"Idle")
+	var node: Node3D = j.unit.node
+	var start: float = node.global_position.y
+	var want: float = j.to_slot.position.y
+	await _animate(0.6, func(t: float) -> void: node.global_position.y = lerpf(start, want, t))
+	_set_down(node, j.to_slot)
+	_loaded_jack = false
+	await _wait(handover_time)
+
+
 func _settled(j: CarryJob) -> void:
 	var first: bool = not j.has_meta(&"settled")
 	super._settled(j)

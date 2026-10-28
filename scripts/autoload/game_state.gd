@@ -1,8 +1,9 @@
 extends Node
 ## Global game state: money, clock, pause and speed.
-## Real-time clock: at 1x one real second is one game second
+## Clock: at `speed` 1 one real second is one game second
 ## (minutes_per_second = 1/60). Motion, duties and the clock all run on the
-## same game time: real seconds x speed.
+## same game time: real seconds x speed. The player's "1x" is speed 2
+## (SPEED_PER_X): plain real time felt too slow.
 
 signal money_changed(money: int)
 signal time_changed(day: int, minutes: float)
@@ -14,7 +15,9 @@ signal minutes_advanced(game_minutes: float)
 ## A gameplay event worth a toast (the HUD shows it).
 signal notice_posted(title: String, body: String)
 
-const SPEEDS: Array[int] = [1, 2, 5, 10, 30]
+## Speeds the speed button cycles through (shown as 1x 2x 5x 10x 15x).
+const SPEEDS: Array[int] = [2, 4, 10, 20, 30]
+const SPEED_PER_X: int = 2
 const MINUTES_PER_DAY: float = 24.0 * 60.0
 
 @export var minutes_per_second: float = 1.0 / 60.0
@@ -31,7 +34,7 @@ var paused: bool = false:
 			return
 		paused = value
 		paused_changed.emit(paused)
-var speed: int = 1:
+var speed: int = 2:
 	set(value):
 		if speed == value:
 			return
@@ -93,6 +96,12 @@ func add_money(amount: int) -> void:
 
 func toggle_pause() -> void:
 	paused = not paused
+
+
+## The speed as the player sees it ("1x" at speed 2).
+func speed_text() -> String:
+	var x: float = float(speed) / SPEED_PER_X
+	return ("%dx" % int(x)) if is_equal_approx(x, roundf(x)) else ("%.1fx" % x)
 
 
 func cycle_speed() -> void:

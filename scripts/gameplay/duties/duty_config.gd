@@ -83,14 +83,15 @@ const PROP_MOVE_TIME: float = 0.3
 ## m; the hard limit is 1.5 m, the rest is reaction margin), and from
 ## people (centre to centre).
 const PERSON_VEHICLE_GAP: float = 1.8
-const PERSON_PERSON_GAP: float = 1.25  ## centre to centre while both walk
-## The one exception to the 1.0 m person-person limit: members of one
+const PERSON_PERSON_GAP: float = 1.0  ## centre to centre while both walk
+## The one exception to the 0.8 m person-person limit: members of one
 ## conversation group (talking at the break table or standing together)
 ## stand this close to each other, and only to each other.
 const GROUP_GAP: float = 0.72
 ## Closest two people outside a group ever come (centre to centre): passing
-## someone, queueing behind someone. The limit is 1.0 m.
-const PERSON_MIN: float = 1.05
+## someone, queueing behind someone. The limit is 0.8 m (shoulders about
+## 0.25 m apart: close enough to pass in an aisle).
+const PERSON_MIN: float = 0.85
 ## A worker on a work spot inside a forklift area leaves when a forklift
 ## working there comes this close (m, centre to centre), or when the area's
 ## lock is taken.

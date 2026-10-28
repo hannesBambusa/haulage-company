@@ -28,7 +28,7 @@ const MIN_VV: float = 2.5
 const MIN_VP: float = 1.5
 ## People, centre to centre. The one exception: members of one
 ## conversation group (DutyConfig.GROUP_GAP), only to each other.
-const MIN_PP: float = 1.0
+const MIN_PP: float = 0.8
 const MIN_GROUP: float = 0.72
 ## Float noise only (sampling a path at 1/60 s steps).
 const EPS: float = 0.001
@@ -212,7 +212,7 @@ func _measure(dt: float) -> void:
 			# a worker's safety stop (someone stepped into its way): the one
 			# case it brakes harder than accel; counted, and exempt for the
 			# two frames it spans
-			var stops: int = int(m.get(&"safety_stops")) if not vehicle else 0
+			var stops: int = int(m.get(&"safety_stops")) if not vehicle and m.get(&"safety_stops") != null else 0
 			if not vehicle and (stops != int(pv[4]) or int(pv[5]) > 0):
 				_worst["person safety stops"] = float(_worst.get("person safety stops", 0.0)) + float(stops - int(pv[4]))
 				pv[5] = 1 if stops != int(pv[4]) else 0
@@ -255,8 +255,9 @@ func _measure(dt: float) -> void:
 			var kb: int = b.call(&"traffic_kind")
 			if ka == 1 and kb == 1:
 				# people: centre to centre; one conversation group may stand closer
-				var pa: Node3D = a as Node3D
-				var pb: Node3D = b as Node3D
+				# the jack worker is a CarryAgent (a Node): its body is the 3D one
+				var pa: Node3D = _body_of(a)
+				var pb: Node3D = _body_of(b)
 				var dc: float = Vector2(pa.global_position.x - pb.global_position.x, pa.global_position.z - pb.global_position.z).length()
 				var grouped: bool = a.get(&"group") != null and a.get(&"group") == b.get(&"group")
 				if grouped:
@@ -264,7 +265,7 @@ func _measure(dt: float) -> void:
 					_limit("people in a group < 0.72 m", dc < MIN_GROUP - EPS, "%s / %s %.2f m" % [a.name, b.name, dc])
 				else:
 					_min("min person-person m", dc)
-					_limit("person-person < 1.0 m", dc < MIN_PP, "%s (%s, %s, seat %s) / %s (%s, %s, seat %s) %.2f m" % [a.name, a.call(&"activity_text"), a.get(&"duty").get(&"title") if a.get(&"duty") != null else "-", a.get(&"seat"), b.name, b.call(&"activity_text"), b.get(&"duty").get(&"title") if b.get(&"duty") != null else "-", b.get(&"seat"), dc])
+					_limit("person-person < 0.8 m", dc < MIN_PP, "%s (%s, %s, seat %s) / %s (%s, %s, seat %s) %.2f m" % [a.name, a.call(&"activity_text"), a.get(&"duty").get(&"title") if a.get(&"duty") != null else "-", a.get(&"seat"), b.name, b.call(&"activity_text"), b.get(&"duty").get(&"title") if b.get(&"duty") != null else "-", b.get(&"seat"), dc])
 				continue
 			var d: float = FootprintBox.set_distance(a.call(&"traffic_footprints"), b.call(&"traffic_footprints"))
 			if ka == 0 and kb == 0:
@@ -276,9 +277,9 @@ func _measure(dt: float) -> void:
 				if _servicing(lift, person):
 					continue  # the one exception: a worker servicing a parked, held forklift
 				if d < MIN_VP and d < float(_worst.get("min forklift-person m", INF)) - 0.05:
-					print("MS_FP frame %d d %.2f | %s | person %s (%s) pos (%.2f, %.2f) speed %s blocked_by %s" % [Engine.get_process_frames(), d, lift.debug_state(), person.name, person.call(&"activity_text"), (person as Node3D).global_position.x, (person as Node3D).global_position.z, person.get(&"speed"), person.get(&"blocked_by")])
+					print("MS_FP frame %d d %.2f | %s | person %s (%s) pos (%.2f, %.2f) speed %s blocked_by %s" % [Engine.get_process_frames(), d, lift.debug_state(), person.name, (person.call(&"activity_text") if person.has_method(&"activity_text") else "-"), _body_of(person).global_position.x, _body_of(person).global_position.z, person.get(&"speed"), person.get(&"blocked_by")])
 				_min("min forklift-person m", d)
-				_limit("forklift-person < 1.5 m", d < MIN_VP, "%s / %s (%s) %.2f m" % [lift.debug_state(), person.name, person.call(&"activity_text"), d])
+				_limit("forklift-person < 1.5 m", d < MIN_VP, "%s / %s (%s) %.2f m" % [lift.debug_state(), person.name, (person.call(&"activity_text") if person.has_method(&"activity_text") else "-"), d])
 
 
 ## On the ramp, in the doorway or in a trailer: the forklift's top (overhead
@@ -561,3 +562,9 @@ func _check(cond: bool, what: String) -> void:
 	else:
 		_failures += 1
 		print("  FAIL ", what)
+
+
+## The 3D node a mover walks with: a worker itself, the jack worker's
+## (a CarryAgent, a plain Node) body.
+static func _body_of(m: Node) -> Node3D:
+	return m as Node3D if m is Node3D else m.get(&"body") as Node3D

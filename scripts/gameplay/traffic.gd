@@ -27,13 +27,14 @@ enum Kind { VEHICLE, PERSON }
 ## Yield distances: a mover stops before its path comes this close (edge to edge).
 const SAFE_VV: float = 3.0
 const SAFE_VP: float = 1.9
-const SAFE_PP: float = 1.2
+const SAFE_PP: float = 0.45
 ## Hard minimums: never closer, also for the agent with the right of way.
-## The design limits are 2.5 / 1.5 / 1.0 m; the margin covers one check
-## interval of motion.
+## The design limits are 2.5 / 1.5 m (people: 0.8 m centre to centre,
+## about 0.25 m between shoulders, so two can walk past each other); the
+## margin covers one check interval of motion.
 const HARD_VV: float = 2.6
 const HARD_VP: float = 1.6
-const HARD_PP: float = 1.05
+const HARD_PP: float = 0.3
 const DEADLOCK_TIME: float = 3.0
 ## Parked forklifts keep at least this far off the keep-clear areas.
 const PARKING_MARGIN: float = 0.5
@@ -45,6 +46,12 @@ const COOLDOWN_KEYS: Array[StringName] = [&"give_way_cooldown", &"reroute_cooldo
 const STUCK_TOKEN_TIME: float = 15.0
 ## Idle or lock-waiting movers that block a working one this long move aside.
 const IDLE_BLOCK_TIME: float = 1.5
+## People with nothing to do (idle or on a duty) this close to the next
+## MAKE_WAY_LOOK metres of a working forklift's or jack's leg move off at
+## once, before it has to stop for them. Checked every MAKE_WAY_INTERVAL s.
+const MAKE_WAY_LOOK: float = 8.0
+const MAKE_WAY_MARGIN: float = 0.3
+const MAKE_WAY_INTERVAL: float = 0.25
 const STATIC_CLEARANCE: float = 0.12
 const PALLET_CLEARANCE: float = 0.04
 const CELL: float = 4.0
@@ -82,6 +89,7 @@ var _zone_cache: Array[FootprintBox] = []
 var _lane_cache: Array[FootprintBox] = []
 ## Game seconds since start (for rate-limited logs).
 var _clock: float = 0.0
+var _make_way_t: float = 0.0
 ## Startup checks plan on the empty hall.
 var _ignore_movers: bool = false
 ## Every lock's region (zones, rack aisles, floor storage), built at startup.
@@ -774,6 +782,10 @@ func _process(delta: float) -> void:
 				if cd > 0.0:
 					m.set_meta(key, cd - dt)
 	_update_token(dt)
+	_make_way_t -= dt
+	if _make_way_t <= 0.0:
+		_make_way_t = MAKE_WAY_INTERVAL
+		_make_way_ahead()
 	_resolve_lock_waits(dt)
 	# deadlocks and idle blockers
 	for a: Node in movers:
@@ -804,6 +816,34 @@ func _process(delta: float) -> void:
 		if waited > DEADLOCK_TIME * 3.0:
 			# still stuck: plan again round whatever is in the way
 			_ask_reroute(a)
+
+
+## People with nothing to do always make way for a working forklift or
+## jack, and a jack always makes way for a working forklift: anyone lower
+## in the yield order standing or walking where its current leg goes next
+## is asked to move now, not after it has waited on them.
+func _make_way_ahead() -> void:
+	for v: Node in movers:
+		var a: CarryAgent = v as CarryAgent
+		if a == null or not a.traffic_working() or not a.traffic_active():
+			continue
+		var ahead: Array = a.future_footprints(MAKE_WAY_LOOK)
+		if ahead.is_empty():
+			continue
+		var mine: int = priority(a)
+		for m: Node in movers:
+			if m == a or int(m.call(&"traffic_kind")) != Kind.PERSON or not m.call(&"traffic_active"):
+				continue
+			if (bool(m.call(&"traffic_working")) and not m is CarryAgent) or priority(m) >= mine:
+				continue  # working jacks rank below forklifts, so they move too
+			if float(m.get_meta(&"give_way_cooldown", 0.0)) > 0.0:
+				continue
+			var theirs: Array = m.call(&"traffic_footprints")
+			var need: float = safe_distance(a, m) + MAKE_WAY_MARGIN
+			for fp: Array in ahead:
+				if FootprintBox.set_distance(fp, theirs) < need:
+					_ask_give_way(m, a)
+					break
 
 
 ## Agents waiting for a zone lock or a dock lane: when the holder is idle it
@@ -874,9 +914,10 @@ func _update_token(dt: float) -> void:
 		var h: CarryAgent = token_holder as CarryAgent
 		var way: Array = h.future_footprints(8.0)  # cached: read only
 		var at: Array = h.traffic_footprints()
+		var mine: int = priority(h)
 		for m: Node in movers:
-			if m == token_holder or not m.call(&"traffic_active"):
-				continue
+			if m == token_holder or not m.call(&"traffic_active") or priority(m) > mine:
+				continue  # a jack holding it does not move a working forklift
 			var theirs: Array = m.call(&"traffic_footprints")
 			var need: float = safe_distance(h, m) + 0.5
 			var close: bool = FootprintBox.set_distance(at, theirs) < need
@@ -990,6 +1031,7 @@ func plan_vehicle(agent: CarryAgent, from: Vector2, yaw0: float, to: Vector2, ya
 		if not best.is_empty():
 			if level == 2:
 				print("Traffic: %s planned ignoring parked movers" % agent.label)
+				_clear_parked_for(agent, best)
 			return best
 	if not allow_fallback:
 		return []
@@ -998,6 +1040,28 @@ func plan_vehicle(agent: CarryAgent, from: Vector2, yaw0: float, to: Vector2, ya
 		return []
 	_note_no_path(agent, from, to, "least bad way (%s)" % block_reason(agent, fallback[fallback.size() - 1], exempt))
 	return fallback
+
+
+## A plan that only fits by ignoring parked movers: every lower-priority
+## one standing on it moves off (duty workers drop the duty and walk out of
+## the corridor), so the two never wait on each other.
+func _clear_parked_for(agent: CarryAgent, legs: Array) -> void:
+	var mine: int = priority(agent)
+	for m: Node in movers:
+		if m == agent or not m.call(&"traffic_active") or m.call(&"traffic_moving") or priority(m) >= mine:
+			continue
+		var theirs: Array = m.call(&"traffic_footprints")
+		var need: float = safe_distance(agent, m) + 0.6
+		var hit: bool = false
+		for leg: MotionPath in legs:
+			for i: int in range(0, leg.pts.size(), SAMPLE_STRIDE):
+				if FootprintBox.set_distance(agent.footprints_at(leg.pts[i], leg.yaws[i], false), theirs) < need:
+					hit = true
+					break
+			if hit:
+				break
+		if hit:
+			_ask_give_way(m, agent)
 
 
 ## Logs a planning failure at most every 10 game seconds per agent.

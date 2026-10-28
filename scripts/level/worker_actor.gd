@@ -46,6 +46,8 @@ const PERSON_HALF: float = 0.28
 ## Keep-out from a forklift that stands still (it cannot run anyone over;
 ## routes keep a little more).
 const PARKED_GAP: float = 1.7
+## Metres of a forklift's coming path a worker walking round it keeps off.
+const WALK_ROUND_AHEAD: float = 4.0
 ## Planned braking (onto a mark, for someone ahead) uses this share of accel,
 ## so the last step onto the mark stays within accel.
 const PLAN_DECEL: float = 0.9
@@ -134,6 +136,8 @@ var _yielding: bool = false
 ## Standing to let another walker pass (_give_to).
 var _giving_way: bool = false
 var _steer: Vector2 = Vector2.ZERO
+## Seconds the route has led hard into a parked forklift (see _vehicle_slide).
+var _slide_t: float = 0.0
 var _coast_dir: Vector2 = Vector2.ZERO
 ## Safety stops: the worker had to stop dead because someone (or a wall)
 ## was suddenly in the way of its next step. Counted for tests (the one
@@ -147,6 +151,13 @@ func _note_stop(reason: String, v: float) -> void:
 		safety_stops += 1
 		hard_stops[reason] = int(hard_stops.get(reason, 0)) + 1
 var _edge_t: float = 0.0
+## Seconds stood still on the way somewhere, whatever stopped the worker
+## (a person, a forklift's keep-out, both at once). Past STALL_TIME it
+## decides (_unstall) instead of waiting on; _stalls counts the decisions
+## since it last got going, so each one tries the next way out.
+var _stall_t: float = 0.0
+var _stalls: int = 0
+const STALL_TIME: float = 1.5
 var _people_replans: int = 0
 var _people_cap: float = INF
 var _people_by: Node = null
@@ -250,8 +261,9 @@ func give_way(winner: Node) -> void:
 	if _on_job:
 		return
 	if planner != null:
-		if service_vehicle == null and winner != null and is_instance_valid(winner) and int(winner.call(&"traffic_kind")) == Traffic.Kind.VEHICLE:
-			clear_the_way(winner)
+		if service_vehicle == null and _is_machine(winner):
+			if not _walk_round(winner):
+				clear_the_way(winner)
 		else:
 			_start_yield(winner)
 		return
@@ -309,8 +321,9 @@ func traffic_working() -> bool:
 	return false
 
 
+## Below every forklift and jack, idle ones too (Traffic yield order).
 func traffic_priority() -> int:
-	return -9000
+	return -90000
 
 
 func traffic_give_way(winner: Node) -> bool:
@@ -519,6 +532,8 @@ func play_once(anim: StringName) -> float:
 
 ## Walks to `p` (and turns to `face_yaw` when given) along a PeopleNav route.
 func walk_to(p: Vector2, face_yaw: float = NAN) -> void:
+	_stall_t = 0.0
+	_stalls = 0
 	_goal = p
 	_goal_yaw = face_yaw
 	_saved_goal = null
@@ -804,6 +819,7 @@ func _staff_motion(dt: float) -> void:
 		Mode.WALK:
 			_coast_dir = Vector2.ZERO
 			_walk_step(dt)
+			_stall_check(dt)
 		Mode.TURN:
 			_coast(dt)
 			_turn_step(dt)
@@ -867,8 +883,8 @@ func _crossfade(anim: StringName) -> void:
 	_anim.play(anim, DutyConfig.BLEND)
 
 
-func _plan_path(round_walkers: bool = false) -> bool:
-	var avoid: Array = []
+func _plan_path(round_walkers: bool = false, extra: Array = []) -> bool:
+	var avoid: Array = extra.duplicate()
 	if traffic != null:
 		for m: Node in traffic.movers:
 			if m == self or not m.call(&"traffic_active"):
@@ -888,7 +904,7 @@ func _plan_path(round_walkers: bool = false) -> bool:
 					avoid.append([theirs, 0.6])
 	var t0: int = Time.get_ticks_usec()
 	var path: PackedVector2Array = nav.find_path(pos2(), _goal, avoid)
-	if path.is_empty() and round_walkers:
+	if path.is_empty() and (round_walkers or not extra.is_empty()):
 		return false
 	if path.is_empty() and not avoid.is_empty():
 		path = nav.find_path(pos2(), _goal)
@@ -955,6 +971,20 @@ func _walk_step(dt: float) -> void:
 		squeezed = true
 		if not found:
 			_people_cap = 0.0
+	var slid: float = _vehicle_slide(here, dir)
+	if absf(slid) > 0.0001:
+		dir = dir.rotated(slid)
+		if absf(slid) > 1.0:
+			# the route runs into a parked forklift (it parked after the
+			# plan): a new one round it before long
+			_slide_t += dt
+			if _slide_t > 0.8:
+				_slide_t = 0.0
+				_plan_path()
+		else:
+			_slide_t = 0.0
+	else:
+		_slide_t = 0.0
 	var want: float = atan2(-dir.x, -dir.y)
 	var diff: float = angle_difference(yaw(), want)
 	var rate: float = DutyConfig.TURN_RATE * (0.6 + 0.4 * clampf(speed / walk_speed, 0.0, 1.0))
@@ -981,7 +1011,7 @@ func _walk_step(dt: float) -> void:
 		_give_t += dt
 		var other: Node3D = _give_to as Node3D
 		var gone: bool = other == null or not is_instance_valid(other) or pos2().distance_to(Vector2(other.global_position.x, other.global_position.z)) > 1.8
-		if gone or _give_t > 4.0:
+		if gone or _give_t > 2.5:
 			_giving_way = false
 			if not gone:
 				_start_yield(_give_to)
@@ -1051,6 +1081,39 @@ func _walk_step(dt: float) -> void:
 	global_position = Vector3(nxt.x, global_position.y, nxt.y)
 	if arriving:
 		_arrive()
+
+
+## Walking along a parked forklift: the smallest turn of `dir` (radians,
+## 0 when none is needed) that keeps the next steps from closing in on it
+## inside PARKED_GAP, so the worker curves along its side at pace instead
+## of braking for it (the route round it is planned at PARKED_GAP + a bit;
+## cutting a corner of it would otherwise stop the worker dead).
+func _vehicle_slide(here: Vector2, dir: Vector2) -> float:
+	if traffic == null:
+		return 0.0
+	var boxes: Array = []
+	for m: Node in traffic.movers:
+		if m is WorkerActor or m == service_vehicle or not m.call(&"traffic_active") or bool(m.call(&"traffic_moving")):
+			continue
+		var theirs: Array = m.call(&"traffic_footprints")
+		if theirs.is_empty() or (theirs[0] as FootprintBox).c.distance_to(here) > 9.0:
+			continue
+		var now: float = FootprintBox.set_distance(traffic_footprints_at(here, yaw()), theirs)
+		if now < PARKED_GAP + 0.6:
+			boxes.append([theirs, now])
+	if boxes.is_empty():
+		return 0.0
+	for a: float in [0.0, 0.2, -0.2, 0.4, -0.4, 0.65, -0.65, 0.9, -0.9, 1.2, -1.2, 1.57, -1.57]:
+		var q: Vector2 = here + dir.rotated(a) * 0.6
+		var ok: bool = true
+		for b: Array in boxes:
+			var d: float = FootprintBox.set_distance(traffic_footprints_at(q, yaw()), b[0])
+			if d < PARKED_GAP and d < float(b[1]) - 0.01:
+				ok = false
+				break
+		if ok:
+			return a
+	return 0.0
 
 
 ## The same-length step turned off `heading` (smallest turn first) that
@@ -1146,13 +1209,24 @@ func _people_steer(here: Vector2, desired: Vector2, remaining: float) -> Vector2
 		# closing in on them from any side: no faster than lets the worker
 		# stop (at accel) outside their keep-out
 		var their_v: Vector2 = (m as WorkerActor).forward2() * float((m as WorkerActor).speed)
-		var closing: float = (r / maxf(dist, 0.001)).dot(desired * maxf(speed, 0.3) - their_v)
-		if closing > 0.05:
-			# they may keep coming while I brake: their approach eats room too
-			var u: float = maxf(0.0, -(r / maxf(dist, 0.001)).dot(their_v))
+		var rn: Vector2 = r / maxf(dist, 0.001)
+		var closing: float = rn.dot(desired * maxf(speed, 0.3) - their_v)
+		var toward: float = rn.dot(desired)
+		# two people walking across each other's way: the lower staff id
+		# keeps its pace, the other slows for it (both braking for each
+		# other is how they used to end up stood face to face)
+		var wa: WorkerActor = m as WorkerActor
+		var mine: bool = staff_id < wa.staff_id and wa._mode == Mode.WALK and wa.speed > 0.2 and not wa._giving_way \
+				and dist > _person_min(m) + 0.15 and (group == null or wa.group != group)
+		if closing > 0.05 and toward > 0.05 and not mine:
+			# they may keep coming while I brake: their approach eats room too.
+			# Only the part of my pace that heads at them counts: walking
+			# past someone (mostly sideways to them) keeps its pace, the
+			# way people brush past each other in an aisle
+			var u: float = maxf(0.0, -rn.dot(their_v))
 			var a2: float = accel * PLAN_DECEL
-			var room: float = maxf(dist - _person_min(m) - 0.15, 0.0)
-			var stop_c: float = maxf(sqrt(u * u + 2.0 * a2 * room) - u, 0.0)
+			var room: float = maxf(dist - _person_min(m) - 0.1, 0.0)
+			var stop_c: float = maxf(sqrt(u * u + 2.0 * a2 * room) - u, 0.0) / toward
 			if stop_c < _people_cap:
 				_people_cap = stop_c
 				_people_by = m
@@ -1161,12 +1235,15 @@ func _people_steer(here: Vector2, desired: Vector2, remaining: float) -> Vector2
 			continue
 		var lat: float = r.dot(right)
 		var gap: float = _person_gap(m)
-		if absf(lat) < gap + 0.2 and ahead < 3.0:
-			# pass on the side away from them (right when straight ahead)
+		if absf(lat) < gap + 0.2 and ahead < 4.0:
+			# pass on the side away from them (right when straight ahead),
+			# starting early so it is a slight curve, not a late swerve
 			var side: float = -signf(lat) if absf(lat) > 0.08 else 1.0
-			var k: float = (1.0 - absf(lat) / (gap + 0.2)) * (1.0 - ahead / 3.0)
+			var k: float = (1.0 - absf(lat) / (gap + 0.2)) * (1.0 - ahead / 4.0)
 			push += right * side * k * 2.2
-		if absf(lat) < gap:
+		if absf(lat) < _person_min(m):
+			# on course to bump into them: slow down (bending past at the
+			# comfortable gap keeps the pace)
 			var hard: float = _person_min(m)
 			# no faster than lets the worker stop (at accel) short of them
 			var c: float = minf(walk_speed, sqrt(2.0 * accel * PLAN_DECEL * maxf(dist - hard - 0.05, 0.0)))
@@ -1228,7 +1305,7 @@ func _retreat_from(b: WorkerActor) -> void:
 		for k: int in 12:
 			var dir: Vector2 = away.rotated((k - 6) * TAU / 12.0)
 			var p: Vector2 = here + dir * r
-			if not nav.walkable(p) or nav.find_path(here, p).is_empty():
+			if not nav.walkable(p) or _by_parked_forklift(p) or nav.find_path(here, p).is_empty():
 				continue
 			var s: float = p.distance_to(b.pos2()) + dir.dot(away) * 0.5
 			for w: Node in _near_people:
@@ -1259,6 +1336,21 @@ func _retreat_from(b: WorkerActor) -> void:
 	motor = Motor.RUNNING
 	_crossfade(_walk_anim)
 	displaced = true
+
+## Standing at `p` would be inside a parked forklift's keep-out (a spot to
+## step back to there only gets the worker stuck against it).
+func _by_parked_forklift(p: Vector2) -> bool:
+	if traffic == null:
+		return false
+	for m: Node in traffic.movers:
+		if m is WorkerActor or m == service_vehicle or not m.call(&"traffic_active"):
+			continue
+		if int(m.call(&"traffic_kind")) != Traffic.Kind.VEHICLE:
+			continue
+		if FootprintBox.set_distance(traffic_footprints_at(p, 0.0), m.call(&"traffic_footprints")) < PARKED_GAP + 0.2:
+			return true
+	return false
+
 
 ## Only waiting about (not at work on a spot): may move aside for someone.
 func can_shift() -> bool:
@@ -1367,6 +1459,91 @@ func _slide_step(dt: float) -> void:
 
 # --- staff traffic --------------------------------------------------------------------
 
+## Walking but standing still (blocked, squeezed, a side step refused on
+## every side): after STALL_TIME the worker decides instead of waiting on
+## the others, who are often waiting on it. Letting someone pass
+## (_giving_way) is a decision already and has its own time-out.
+func _stall_check(dt: float) -> void:
+	if _mode != Mode.WALK or _giving_way or speed > 0.05:
+		_stall_t = 0.0
+		if speed > 0.3:
+			_stalls = 0
+		return
+	_stall_t += dt
+	if _stall_t > STALL_TIME:
+		_stall_t = 0.0
+		_unstall()
+
+
+## The tie-break when people stand facing each other (or round a forklift)
+## and nobody moves: the person in the way with the lower staff id walks
+## on, the higher id makes way. Ways out, one per stall: a route round
+## everyone near and the forklifts' keep-outs (as obstacles, so the group
+## goes round on either side), then stepping back out of the other one's
+## way (or out of the forklift's), waiting there and going on.
+func _unstall() -> void:
+	if planner == null or _on_job:
+		return
+	_stalls += 1
+	var here: Vector2 = pos2()
+	var person: WorkerActor = null
+	var best: float = INF
+	for w: Node in _near_people:
+		var o: WorkerActor = w as WorkerActor
+		var d: float = here.distance_to(o.pos2())
+		if d < best and d < _person_gap(o) + 0.8:
+			best = d
+			person = o
+	var extra: Array = []
+	var vehicle: Node = null
+	var v_best: float = INF
+	if traffic != null:
+		for m: Node in traffic.movers:
+			if m is WorkerActor or not m.call(&"traffic_active") or m == service_vehicle:
+				continue
+			var theirs: Array = m.call(&"traffic_footprints")
+			var dv: float = FootprintBox.set_distance(traffic_footprints(), theirs)
+			if dv > 6.0:
+				continue
+			extra.append([theirs, Traffic.SAFE_VP + 0.2])
+			if m.has_method(&"future_footprints") and bool(m.call(&"traffic_moving")):
+				for fp: Array in m.call(&"future_footprints", WALK_ROUND_AHEAD):
+					extra.append([fp, Traffic.HARD_VP])
+			if dv < v_best:
+				v_best = dv
+				vehicle = m
+	# the one with the right of way: walks on as soon as the other one moves
+	var my_way: bool = person != null and staff_id < person.staff_id and person._mode == Mode.WALK and not person._giving_way
+	if my_way and _stalls <= 2:
+		if not _plan_path(true, extra):
+			_plan_path(true)
+		return
+	if _stalls == 1 and (_plan_path(true, extra) or (extra.is_empty() and _plan_path(true))):
+		_block_t = 0.0
+		return
+	if _yielding:
+		if _stalls >= 2 and _saved_goal != null and not _is_machine(_yield_from):
+			# the step back out of a person's way is itself stuck: give it
+			# up and walk on to where it was going
+			var g: Array = _saved_goal
+			_saved_goal = null
+			_yielding = false
+			_yield_from = null
+			_goal = g[0]
+			_goal_yaw = g[1]
+			if not _plan_path(true, extra):
+				_plan_path()
+			_stalls = 0
+		return  # already on the way out of someone's way: the path above failed, wait for the next stall
+	if person != null and (vehicle == null or best < v_best + 0.5):
+		_retreat_from(person)
+		if not _yielding:
+			_start_yield(person)
+	elif vehicle != null:
+		_start_yield(vehicle)
+	_block_t = 0.0
+
+
 ## Forklift that the next stretch of the route would bring within the
 ## keep-out distance (and closer than now), or null. A forklift coming
 ## across where the worker stands makes it step aside.
@@ -1386,7 +1563,9 @@ func _find_blocker() -> Node:
 		if theirs.is_empty() or (theirs[0] as FootprintBox).c.distance_to(me) > look + 8.0:
 			continue
 		var moving: bool = bool(m.call(&"traffic_moving"))
-		var gap: float = DutyConfig.PERSON_VEHICLE_GAP if moving else PARKED_GAP
+		# parked: _vehicle_slide curves the worker along it at PARKED_GAP;
+		# it only blocks the worker when that fails, at the hard limit
+		var gap: float = DutyConfig.PERSON_VEHICLE_GAP if moving else Traffic.HARD_VP + 0.08
 		if m == service_vehicle and not moving:
 			gap = 0.15  # servicing it: right up to it, never into it
 		var coming: Array = []
@@ -1408,7 +1587,8 @@ func _find_blocker() -> Node:
 		for cfp: Array in coming:
 			var dc: float = FootprintBox.set_distance(here, cfp)
 			if dc < gap - 0.2 and dc < now - 0.05:
-				_start_yield(m)
+				if not _walk_round(m):
+					_start_yield(m)
 				return null
 	return null
 
@@ -1424,6 +1604,45 @@ func _handle_block() -> void:
 		# parked in the way: plan round it
 		_block_t = 0.0
 		_plan_path()
+	elif _block_t > 1.0:
+		# driving: go round it and the stretch it drives next, if there is a way
+		_block_t = 0.0
+		_walk_round(b)
+
+
+## On the way somewhere and a forklift or jack is in the way: a new route
+## to the same goal round it (its body at the yield distance, the next
+## metres it drives a bit closer), so the worker walks on instead of
+## turning back. False when there is none, or the worker is not walking.
+func _walk_round(v: Node) -> bool:
+	if planner == null or _on_job or v == null or not is_instance_valid(v):
+		return false
+	if _mode != Mode.WALK or motor != Motor.RUNNING or _yielding or _path_i >= _path.size():
+		return false
+	var extra: Array = [[v.call(&"traffic_footprints"), Traffic.SAFE_VP + 0.2]]
+	if v.has_method(&"future_footprints"):
+		for fp: Array in v.call(&"future_footprints", WALK_ROUND_AHEAD):
+			extra.append([fp, Traffic.HARD_VP])
+	var old: PackedVector2Array = _path
+	var old_i: int = _path_i
+	if not _plan_path(false, extra) or _path_length(_path, 1) > _path_length(old, old_i) * 2.5 + 8.0:
+		_path = old
+		_path_i = old_i
+		return false
+	blocked_by = null
+	blocked_time = 0.0
+	_block_t = 0.0
+	return true
+
+
+## Length of `path` from point i - 1 (where the worker is) to the end.
+func _path_length(path: PackedVector2Array, i: int) -> float:
+	var total: float = 0.0
+	var p: Vector2 = pos2()
+	for k: int in range(i, path.size()):
+		total += p.distance_to(path[k])
+		p = path[k]
+	return total
 
 
 func _start_yield(from: Node) -> void:
@@ -1442,7 +1661,7 @@ func _start_yield(from: Node) -> void:
 	# when nothing is fully clear (a narrow aisle): the most open spot within reach
 	var fallback: Vector2 = here
 	var fallback_clear: float = 0.0
-	var is_vehicle: bool = from != null and is_instance_valid(from) and int(from.call(&"traffic_kind")) == Traffic.Kind.VEHICLE
+	var is_vehicle: bool = _is_machine(from)
 	var need: float = 2.2 if is_vehicle else 1.1
 	var on_break: bool = duty != null and bool(duty.get(&"is_break"))
 	for r: float in [1.2, 2.0, 3.0, 4.0, 5.5]:
@@ -1505,6 +1724,14 @@ func _start_yield(from: Node) -> void:
 	displaced = true
 
 
+## A forklift or a pallet jack (a carrier on a job): people make full way
+## for it, not just a step aside.
+static func _is_machine(n: Node) -> bool:
+	if n == null or not is_instance_valid(n):
+		return false
+	return int(n.call(&"traffic_kind")) == Traffic.Kind.VEHICLE or (n is CarryAgent and (n as CarryAgent).job != null)
+
+
 ## A forklift needs the way (it waits on this worker, or its fixed
 ## manoeuvre runs through where the worker stands): the duty is dropped at
 ## once (props put down) and the worker walks out of the forklift's way
@@ -1536,6 +1763,9 @@ func yield_tick(dt: float) -> bool:
 	if _yield_from != null and is_instance_valid(_yield_from):
 		var theirs: Array = _yield_from.call(&"traffic_footprints")
 		gone = FootprintBox.set_distance(traffic_footprints(), theirs) > 3.0 or _yield_wait > 12.0
+		if _yield_from is WorkerActor and not _is_machine(_yield_from):
+			# a person: by once they stopped walking, or after a short wait
+			gone = gone or (_yield_from as WorkerActor)._mode != Mode.WALK or _yield_wait > 4.0
 		if _yield_wait < 1.5:
 			gone = false
 	if gone:

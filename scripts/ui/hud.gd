@@ -43,6 +43,7 @@ const COLOR_LOADING: Color = Color(0.95, 0.75, 0.16)
 @onready var _truck_header: Label = $Root/DockPanel/VBox/CurrentTruck
 
 var _dock: Dock = null
+var _menu: GameMenu = null
 var _docks: Array[Dock] = []
 var _staff_panel: Control = null
 var _dot_style: StyleBoxFlat
@@ -70,6 +71,11 @@ func _ready() -> void:
 	_staff_panel = (load("res://ui/staff_panel.tscn") as PackedScene).instantiate() as Control
 	$Root.add_child(_staff_panel)
 	(_tabs.get_node(^"Staff") as Button).pressed.connect(func() -> void: _staff_panel.visible = not _staff_panel.visible)
+	_menu = GameMenu.new()
+	_menu.name = "GameMenu"
+	$Root.add_child(_menu)
+	for path: NodePath in [^"Root/TopBar/Bar/Right/GearButton", ^"Root/TopBar/Bar/Right/MenuButton"]:
+		(get_node(path) as Button).pressed.connect(_menu.open)
 	_contracts_window.closed.connect(close_contracts)
 	_storage_panel.closed.connect(close_storage)
 
@@ -241,8 +247,8 @@ func _on_time_changed(_d: int, _m: float) -> void:
 	_day.text = GameState.format_clock()
 
 
-func _on_speed_changed(speed: int) -> void:
-	_speed_button.text = "%dx" % speed
+func _on_speed_changed(_speed: int) -> void:
+	_speed_button.text = GameState.speed_text()
 
 
 func _on_paused_changed(paused: bool) -> void:

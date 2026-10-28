@@ -16,6 +16,8 @@ class Visit:
 	var contract: Contract
 	var pickup: bool = false
 	var at: float = 0.0
+	## Game time it was booked (start of the countdown).
+	var since: float = 0.0
 
 
 var docks: Array[Dock] = []
@@ -55,6 +57,7 @@ func schedule_visit(contract: Contract, pickup: bool, at_minutes: float) -> void
 	visit.contract = contract
 	visit.pickup = pickup
 	visit.at = at_minutes
+	visit.since = float(_clock.call(&"now")) if _clock != null else at_minutes
 	_visits.append(visit)
 	_dispatch()
 
@@ -73,6 +76,14 @@ func book_now(contract: Contract, pickup: bool) -> Dock:
 
 func pending_visits() -> int:
 	return _visits.size()
+
+
+## The booked visit for `contract` that has no dock yet, or null.
+func pending_visit_for(contract: Contract) -> Visit:
+	for visit: Visit in _visits:
+		if visit.contract == contract:
+			return visit
+	return null
 
 
 func _on_minutes_advanced(_game_minutes: float) -> void:

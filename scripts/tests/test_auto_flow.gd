@@ -38,7 +38,7 @@ func _run() -> void:
 	var jacks: Array = _board.jacks()
 	_check(jacks.size() == 1, "one Jack operator (%d)" % jacks.size())
 	_board.unit_placed.connect(func(job: CarryJob) -> void:
-		if job.unit.contract == _contract and job.kind == CarryJob.Kind.STORE and job.agent is JackCarrier:
+		if job.unit.contract == _contract and job.kind == CarryJob.Kind.STORE and job.agent != null and String(job.agent.label).ends_with("(pallet jack)"):
 			_jack_moves.append("%s->%s" % [job.unit.code, job.to_slot.label])
 			_check(not job.to_slot.needs_lift(), "jack slot %s is ground level" % job.to_slot.label))
 	gs.notice_posted.connect(func(title: String, body: String) -> void: print("  toast: %s - %s" % [title, body]))

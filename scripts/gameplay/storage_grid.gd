@@ -29,6 +29,10 @@ const ENTRY_EXTRA: float = 1.2
 @export var zone_margin: float = 0.25
 ## Decor this close (m, on the ground) to a floor slot makes it house stock.
 @export var house_stock_radius: float = 0.75
+## Start with every rack and floor storage slot empty: the racks' house
+## stock is removed and decor on floor slots hidden. The reference
+## screenshot (--reference_state) keeps the stock.
+@export var empty_at_start: bool = true
 ## Side each zone is driven into from (pallets lie along it): INBOUND faces
 ## the docks, OUTBOUND faces the hall (its other side is the open yard).
 @export var inbound_open: Vector3 = Vector3.BACK
@@ -78,8 +82,13 @@ func build(level: Node3D) -> void:
 			n.visible = false
 	_build_zone(StorageSlot.Zone.INBOUND, inbound_rect, level.find_child("InboundText", true, false) as Label3D, inbound_open)
 	_build_zone(StorageSlot.Zone.OUTBOUND, outbound_rect, level.find_child("OutboundText", true, false) as Label3D, outbound_open)
+	var empty: bool = empty_at_start and not CargoFlow.REFERENCE_FLAG in OS.get_cmdline_user_args()
+	if empty:
+		for node: Node in level.find_children("*", "Node3D", true, false):
+			if node is RackStock:
+				(node as RackStock).fill = 0.0
 	_build_racks(level)
-	_build_floor(level, decor)
+	_build_floor(level, decor, empty)
 	var materials: Dictionary = {}
 	for s: StorageSlot in slots:
 		var marker: SlotMarker = SlotMarker.create(s, materials)
@@ -379,7 +388,7 @@ static func rack_code(rack: Node) -> String:
 	return n.trim_prefix("Rack") if n.length() > 4 else n
 
 
-func _build_floor(level: Node3D, decor: Array[Node3D]) -> void:
+func _build_floor(level: Node3D, decor: Array[Node3D], empty: bool) -> void:
 	var origin: Vector3 = floor_origin
 	var marker: Node3D = level.find_child(String(floor_node_name), true, false) as Node3D
 	if marker != null:
@@ -393,6 +402,9 @@ func _build_floor(level: Node3D, decor: Array[Node3D]) -> void:
 			s.label = "FLOOR-%02d" % n
 			for d: Node3D in decor:
 				if d.visible and Vector2(d.global_position.x - p.x, d.global_position.z - p.z).length() < house_stock_radius:
+					if empty:
+						d.visible = false
+						continue
 					s.house_stock = true
 					break
 
