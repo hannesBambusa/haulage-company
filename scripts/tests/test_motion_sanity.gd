@@ -268,7 +268,11 @@ func _measure(dt: float) -> void:
 					_limit("person-person < 0.8 m", dc < MIN_PP, "%s (%s, %s, seat %s) / %s (%s, %s, seat %s) %.2f m" % [a.name, a.call(&"activity_text"), a.get(&"duty").get(&"title") if a.get(&"duty") != null else "-", a.get(&"seat"), b.name, b.call(&"activity_text"), b.get(&"duty").get(&"title") if b.get(&"duty") != null else "-", b.get(&"seat"), dc])
 				continue
 			var d: float = FootprintBox.set_distance(a.call(&"traffic_footprints"), b.call(&"traffic_footprints"))
-			if ka == 0 and kb == 0:
+			if ka == 0 and kb == 0 and Traffic.both_parking(a, b):
+				# bays side by side in the parking area
+				_min("min forklift-forklift in parking m", d)
+				_limit("forklift-forklift in parking < %.1f m" % (Traffic.PARK_VV - 0.2), d < Traffic.PARK_VV - 0.2 - EPS, "%s / %s %.2f m" % [a.debug_state(), b.debug_state(), d])
+			elif ka == 0 and kb == 0:
 				_min("min forklift-forklift m", d)
 				_limit("forklift-forklift < 2.5 m", d < MIN_VV, "%s / %s %.2f m" % [a.debug_state(), b.debug_state(), d])
 			else:

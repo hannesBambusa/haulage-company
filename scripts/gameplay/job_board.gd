@@ -37,6 +37,10 @@ signal hold_wanted(agent: CarryAgent)
 ## order. Forklifts start there and return there when idle.
 @export var parking_spots: PackedVector3Array = PackedVector3Array()
 @export var parking_yaws: PackedFloat32Array = PackedFloat32Array()
+## The forklift parking area (world XZ): parked forklifts and one driving
+## into or out of its bay keep only Traffic.PARK_VV from each other here.
+## Empty = no shared area, every spot keeps the full vehicle distance.
+@export var parking_area: Rect2 = Rect2()
 ## Role of each forklift in number order: "Unloader", "Rack", "Loader".
 @export var forklift_roles: PackedStringArray = PackedStringArray(["Unloader", "Rack", "Loader"])
 ## Workers with pallet jacks may take LOAD jobs (off: forklifts load).

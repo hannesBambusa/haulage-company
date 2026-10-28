@@ -31,6 +31,10 @@ signal parked_changed(parked: bool)
 		brake_lights = value
 		_rebuild_if_ready()
 
+## Parked at a dock, the trailer's sides and roof fade to see-through so
+## the pallets inside stay visible (bed, chassis and wheels stay solid).
+@export var xray_when_parked: bool = true
+@export_range(0.0, 1.0) var xray_alpha: float = 0.15
 @export_group("Kinematics")
 @export_range(10.0, 45.0) var max_steer_deg: float = 35.0
 ## Hard articulation limit (jackknife guard). Drivers should stay inside it.
@@ -101,6 +105,7 @@ func _rebuild() -> void:
 			c.queue_free()
 	cab = null
 	trailer = null
+	_xray_mats.clear()
 	_front_wheels.clear()
 	_cab_wheels.clear()
 	_trailer_wheels.clear()
@@ -406,7 +411,42 @@ func set_parked(parked: bool) -> void:
 	if parked == _parked:
 		return
 	_parked = parked
+	if xray_when_parked:
+		set_xray(parked)
 	parked_changed.emit(parked)
+
+
+## Trailer materials faded by set_xray(): the white shell (sides, roof,
+## front) and the cargo walls, rails and ribs inside it.
+const XRAY_MATERIALS: PackedStringArray = ["M_trailer_white", "M_cargo_wall", "M_cargo_rail", "M_cargo_rib"]
+const XRAY_TIME: float = 0.6
+
+var _xray_mats: Array[BaseMaterial3D] = []
+var _xray_tween: Tween = null
+
+
+## Fades the trailer's sides and roof to xray_alpha (on) or back to solid.
+## The shell casts no shadow while faded, so the load is not in its shade.
+func set_xray(on: bool) -> void:
+	var body: MeshInstance3D = trailer.find_child("Body", true, false) as MeshInstance3D if trailer != null else null
+	if body == null:
+		return
+	if _xray_mats.is_empty():
+		for i: int in body.mesh.get_surface_count():
+			var src: BaseMaterial3D = body.mesh.surface_get_material(i) as BaseMaterial3D
+			if src == null or not src.resource_name in XRAY_MATERIALS:
+				continue
+			var m: BaseMaterial3D = src.duplicate() as BaseMaterial3D
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
+			m.cull_mode = BaseMaterial3D.CULL_BACK
+			body.set_surface_override_material(i, m)
+			_xray_mats.append(m)
+	body.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF if on else GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	if _xray_tween != null:
+		_xray_tween.kill()
+	_xray_tween = create_tween().set_parallel(true)
+	for m: BaseMaterial3D in _xray_mats:
+		_xray_tween.tween_property(m, ^"albedo_color:a", xray_alpha if on else 1.0, XRAY_TIME)
 
 
 func is_parked() -> bool:

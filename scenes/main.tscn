@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/level_1.tscn" id="1_level"]
 [ext_resource type="PackedScene" path="res://ui/hud.tscn" id="2_hud"]
@@ -12,6 +12,8 @@
 [ext_resource type="PackedScene" path="res://scenes/break_area.tscn" id="10_break"]
 [ext_resource type="PackedScene" path="res://scenes/cleaning_corner.tscn" id="11_corner"]
 [ext_resource type="Script" path="res://scripts/gameplay/duties/duty_planner.gd" id="12_duties"]
+[ext_resource type="Script" path="res://scripts/level/forklift_parking.gd" id="13_parking"]
+[ext_resource type="FontFile" path="res://ui/fonts/Inter-Bold.ttf" id="14_font"]
 
 [node name="Main" type="Node3D"]
 
@@ -36,8 +38,15 @@ script = ExtResource("4_jobs")
 level_path = NodePath("../../Level1")
 storage_grid_path = NodePath("../StorageGrid")
 rest_spots = PackedVector3Array(-19.8, 0, -3, -22.5, 0, -6.5, -8.5, 0, -24.5, 8.5, 0, -24.8, 0.5, 0, -24.8, 5, 0, -24.8, -21.8, 0, -13.5, 6.5, 0, -24, -8.4, 0, -23.2)
-parking_spots = PackedVector3Array(-6, 0, -12, -20.4, 0, -19, 8.5, 0, -10.5)
-parking_yaws = PackedFloat32Array(90, 90, 0)
+parking_spots = PackedVector3Array(-20.4, 0, -22, -20.4, 0, -19.5, -20.4, 0, -17)
+parking_yaws = PackedFloat32Array(90, 90, 90)
+parking_area = Rect2(-23.5, -23.6, 8, 8)
+
+[node name="ForkliftParking" type="Node3D" parent="Gameplay"]
+script = ExtResource("13_parking")
+job_board_path = NodePath("../JobBoard")
+storage_grid_path = NodePath("../StorageGrid")
+font = ExtResource("14_font")
 
 [node name="Traffic" type="Node" parent="Gameplay"]
 script = ExtResource("9_traffic")

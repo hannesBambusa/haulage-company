@@ -36,6 +36,9 @@ const HARD_VV: float = 2.6
 const HARD_VP: float = 1.6
 const HARD_PP: float = 0.3
 const DEADLOCK_TIME: float = 3.0
+## Edge-to-edge gap between forklifts in the parking area (bays side by
+## side); the hard minimum there is 0.2 m less.
+const PARK_VV: float = 0.7
 ## Parked forklifts keep at least this far off the keep-clear areas.
 const PARKING_MARGIN: float = 0.5
 ## Floor in front of a dock lane kept clear (stage point plus lining up).
@@ -71,6 +74,8 @@ const GRID_GROW: float = 0.95
 
 var grid: StorageGrid = null
 var board: JobBoard = null
+## JobBoard.parking_area (static: the distance helpers are static).
+static var parking_area: Rect2 = Rect2()
 ## Static obstacles on the floor plane.
 var statics: Array[Rect2] = []
 var static_names: PackedStringArray = PackedStringArray()
@@ -124,6 +129,7 @@ func _ready() -> void:
 	add_to_group(&"traffic")
 	grid = get_node_or_null(storage_grid_path) as StorageGrid
 	board = get_node_or_null(job_board_path) as JobBoard
+	parking_area = board.parking_area if board != null else Rect2()
 	_level = get_node_or_null(level_path) as Node3D
 	if grid == null or _level == null:
 		push_error("Traffic: storage_grid_path or level_path not set")
@@ -618,7 +624,9 @@ func _choose_parking() -> void:
 	for f: ForkliftCarrier in board.forklifts():
 		var home: Vector2 = f._home_pos
 		var yaw: float = f._home_yaw
-		var why: String = parking_problem(f, home, yaw, taken)
+		# the bays of the parking area are spaced by design (PARK_VV)
+		var bay: bool = parking_area.has_point(home)
+		var why: String = parking_problem(f, home, yaw, [] if bay else taken)
 		if not why.is_empty():
 			var found: bool = false
 			for r: float in [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0]:
@@ -644,11 +652,20 @@ func _choose_parking() -> void:
 
 # --- movers --------------------------------------------------------------------------
 
+## Both in the forklift parking area (bays side by side): only PARK_VV.
+static func both_parking(a: Node, b: Node) -> bool:
+	if not parking_area.has_area():
+		return false
+	var ca: CarryAgent = a as CarryAgent
+	var cb: CarryAgent = b as CarryAgent
+	return ca != null and cb != null and parking_area.has_point(ca._pos) and parking_area.has_point(cb._pos)
+
+
 static func safe_distance(a: Node, b: Node) -> float:
 	var ka: int = a.call(&"traffic_kind")
 	var kb: int = b.call(&"traffic_kind")
 	if ka == Kind.VEHICLE and kb == Kind.VEHICLE:
-		return SAFE_VV
+		return PARK_VV if both_parking(a, b) else SAFE_VV
 	if ka == Kind.PERSON and kb == Kind.PERSON:
 		return SAFE_PP
 	return SAFE_VP
@@ -659,7 +676,7 @@ static func hard_distance(a: Node, b: Node) -> float:
 	var ka: int = a.call(&"traffic_kind")
 	var kb: int = b.call(&"traffic_kind")
 	if ka == Kind.VEHICLE and kb == Kind.VEHICLE:
-		return HARD_VV
+		return PARK_VV - 0.2 if both_parking(a, b) else HARD_VV
 	if ka == Kind.PERSON and kb == Kind.PERSON:
 		return HARD_PP
 	return HARD_VP
